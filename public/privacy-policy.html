@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Privacy Policy · Prelyct</title>
+    <meta
+      name="description"
+      content="Learn how Prelyct collects, uses, and protects your information across our products and services."
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              accent: '#2563eb',
+              accentSoft: '#60a5fa',
+            },
+            fontFamily: {
+              sans: ['Inter', 'ui-sans-serif', 'system-ui'],
+            },
+          },
+        },
+      };
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="bg-white font-sans text-slate-800">
+    <header class="sticky top-0 z-50 border-b border-slate-200 bg-white/90 backdrop-blur">
+      <div class="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+        <a href="index.html" class="flex items-center gap-2">
+          <img src="images/logo.png" alt="Prelyct logo" class="h-10 w-10" />
+          <span class="text-xl font-semibold tracking-tight text-slate-900">Prelyct</span>
+        </a>
+        <nav class="hidden items-center gap-8 text-sm font-medium text-slate-600 lg:flex">
+          <div class="relative group">
+            <button class="inline-flex items-center gap-1 transition hover:text-accent">
+              Products
+              <svg class="h-3 w-3" viewBox="0 0 12 12" fill="none">
+                <path d="M3 4.5 6 7.5 9 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="absolute left-0 top-full pt-2 hidden w-60 rounded-xl border border-slate-200 bg-white p-4 shadow-xl group-hover:block">
+              <a href="soleva-votes.html" class="block rounded-lg p-3 text-slate-700 transition hover:bg-slate-50">Prelyct Votes</a>
+              <a href="soleva-hostels.html" class="mt-1 block rounded-lg p-3 text-slate-700 transition hover:bg-slate-50">Prelyct Hostels</a>
+            </div>
+          </div>
+          <div class="relative group">
+            <button class="inline-flex items-center gap-1 transition hover:text-accent">
+              Services
+              <svg class="h-3 w-3" viewBox="0 0 12 12" fill="none">
+                <path d="M3 4.5 6 7.5 9 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="absolute left-0 top-full pt-2 hidden w-64 rounded-xl border border-slate-200 bg-white p-4 shadow-xl group-hover:block">
+              <a href="web-development.html" class="block rounded-lg p-3 text-slate-700 transition hover:bg-slate-50">Web &amp; App Development</a>
+              <a href="graphic-design.html" class="mt-1 block rounded-lg p-3 text-slate-700 transition hover:bg-slate-50">Creative Studio</a>
+              <a href="ms-suite-services.html" class="mt-1 block rounded-lg p-3 text-slate-700 transition hover:bg-slate-50">Microsoft Office Studio</a>
+            </div>
+          </div>
+          <a href="about.html" class="transition hover:text-accent">About</a>
+          <a href="our-work.html" class="transition hover:text-accent">Our Work</a>
+          <a href="contact.html" class="transition hover:text-accent">Contact</a>
+        </nav>
+        <div class="hidden items-center gap-3 lg:flex">
+          <a href="/auth/sign-in" class="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-accent hover:text-accent">Prelyct Votes Dashboard</a>
+          <a href="soleva-votes.html" class="rounded-full bg-accent px-4 py-2 text-sm font-semibold text-white transition hover:bg-accentSoft">Launch a Vote</a>
+        </div>
+        <button id="mobile-toggle" class="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-slate-200 text-slate-600 lg:hidden">
+          <span class="sr-only">Toggle navigation</span>
+          <svg class="h-5 w-5" viewBox="0 0 20 20" fill="none">
+            <path d="M3 7h14M3 13h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+          </svg>
+        </button>
+      </div>
+      <div id="mobile-nav" class="hidden border-t border-slate-200 bg-white px-6 py-4 lg:hidden">
+        <div class="space-y-3 text-sm font-medium text-slate-700">
+          <div>
+            <p class="text-xs uppercase tracking-wide text-slate-400">Products</p>
+            <a href="soleva-votes.html" class="mt-2 block rounded-lg bg-slate-50 px-3 py-2">Prelyct Votes</a>
+            <a href="soleva-hostels.html" class="mt-1 block rounded-lg bg-slate-50 px-3 py-2">Prelyct Hostels</a>
+          </div>
+          <div>
+            <p class="text-xs uppercase tracking-wide text-slate-400">Services</p>
+            <a href="web-development.html" class="mt-2 block rounded-lg bg-slate-50 px-3 py-2">Web &amp; App Development</a>
+            <a href="graphic-design.html" class="mt-1 block rounded-lg bg-slate-50 px-3 py-2">Creative Studio</a>
+            <a href="ms-suite-services.html" class="mt-1 block rounded-lg bg-slate-50 px-3 py-2">Microsoft Office Studio</a>
+          </div>
+          <a href="about.html" class="block rounded-lg bg-slate-50 px-3 py-2">About</a>
+          <a href="our-work.html" class="block rounded-lg bg-slate-50 px-3 py-2">Our Work</a>
+          <a href="contact.html" class="block rounded-lg bg-slate-50 px-3 py-2">Contact</a>
+          <div class="flex gap-3 pt-2">
+            <a href="/auth/sign-in" class="flex-1 rounded-full border border-slate-300 px-4 py-2 text-center text-sm font-semibold text-slate-700">Prelyct Votes Dashboard</a>
+            <a href="soleva-votes.html" class="flex-1 rounded-full bg-accent px-4 py-2 text-center text-sm font-semibold text-white">Launch a Vote</a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="bg-slate-50 py-16">
+        <div class="mx-auto max-w-4xl px-6 text-center">
+          <p class="text-sm font-semibold uppercase tracking-[0.3em] text-accent">Privacy policy</p>
+          <h1 class="mt-4 text-4xl font-bold text-slate-900">
+            How Prelyct protects and respects your data
+          </h1>
+          <p class="mt-3 text-lg text-slate-600">
+            This policy applies to all Prelyct products, websites, and customer engagements. Last
+            updated: January 2025.
+          </p>
+        </div>
+      </section>
+
+      <section class="py-16">
+        <div class="mx-auto max-w-4xl space-y-10 px-6 text-sm leading-relaxed text-slate-600">
+          <div class="space-y-3">
+            <h2 class="text-xl font-semibold text-slate-900">1. Introduction</h2>
+            <p>
+              Prelyct (“we,” “our,” or “us”) is committed to protecting your privacy. This Privacy
+              Policy explains how we collect, use, disclose, and safeguard your information when you
+              visit our website or use our services.
+            </p>
+          </div>
+
+          <div class="space-y-3">
+            <h2 class="text-xl font-semibold text-slate-900">2. Information we collect</h2>
+            <h3 class="font-semibold text-slate-900">2.1 Personal information</h3>
+            <p>We may collect the following types of personal information:</p>
+            <ul class="list-disc space-y-1 pl-5">
+              <li>Name and contact information (email address, phone number)</li>
+              <li>Company or organisation information</li>
+              <li>Job title and role</li>
+              <li>Communication preferences</li>
+              <li>Any other information you voluntarily provide</li>
+            </ul>
+            <h3 class="font-semibold text-slate-900">2.2 Technical information</h3>
+            <p>We automatically collect certain technical information when you visit our website:</p>
+            <ul class="list-disc space-y-1 pl-5">
+              <li>IP address and location data</li>
+              <li>Browser type and version</li>
+              <li>Device information</li>
+              <li>Pages visited and time spent on our website</li>
+              <li>Referring website information</li>
+            </ul>
+          </div>
+
+          <div class="space-y-3">
+            <h2 class="text-xl font-semibold text-slate-900">3. How we use your information</h2>
+            <p>We use the collected information for the following purposes:</p>
+            <ul class="list-disc space-y-1 pl-5">
+              <li>To provide and improve our services</li>
+              <li>To respond to your inquiries and requests</li>
+              <li>To send you relevant information about our services</li>
+              <li>To analyse website usage and improve user experience</li>
+              <li>To comply with legal obligations</li>
+              <li>To protect our rights and prevent fraud</li>
+            </ul>
+          </div>
+
+          <div class="space-y-3">
+            <h2 class="text-xl font-semibold text-slate-900">4. Information sharing and disclosure</h2>
+            <p>
+              We do not sell, trade, or rent your personal information to third parties. We may share
+              your information in the following circumstances:
+            </p>
+            <ul class="list-disc space-y-1 pl-5">
+              <li>With your explicit consent</li>
+              <li>To comply with legal requirements</li>
+              <li>To protect our rights and safety</li>
+              <li>
+                With trusted service providers who assist us in operating our website and services
+              </li>
+              <li>In connection with a business transfer or acquisition</li>
+            </ul>
+          </div>
+
+          <div class="space-y-3">
+            <h2 class="text-xl font-semibold text-slate-900">5. Data security</h2>
+            <p>
+              We implement appropriate technical and organisational measures to protect your personal
+              information against unauthorised access, alteration, disclosure, or destruction.
+              However, no method of transmission over the internet or electronic storage is 100%
+              secure.
+            </p>
+          </div>
+
+          <div class="space-y-3">
+            <h2 class="text-xl font-semibold text-slate-900">6. Data retention</h2>
+            <p>
+              We retain your personal information only for as long as necessary to fulfil the
+              purposes outlined in this Privacy Policy, unless a longer retention period is required
+              or permitted by law.
+            </p>
+          </div>
+
+          <div class="space-y-3">
+            <h2 class="text-xl font-semibold text-slate-900">7. Your rights</h2>
+            <p>Depending on your location, you may have the following rights:</p>
+            <ul class="list-disc space-y-1 pl-5">
+              <li>Access your personal information</li>
+              <li>Correct inaccurate information</li>
+              <li>Delete your personal information</li>
+              <li>Restrict processing of your information</li>
+              <li>Request data portability</li>
+              <li>Object to processing</li>
+            </ul>
+          </div>
+
+          <div class="space-y-3">
+            <h2 class="text-xl font-semibold text-slate-900">8. Cookies and tracking technologies</h2>
+            <p>
+              Our website may use cookies and similar tracking technologies to enhance your browsing
+              experience. You can control cookie settings through your browser preferences.
+            </p>
+          </div>
+
+          <div class="space-y-3">
+            <h2 class="text-xl font-semibold text-slate-900">9. Third-party links</h2>
+            <p>
+              Our website may contain links to third-party websites. We are not responsible for the
+              privacy practices or content of these external sites. We encourage you to review their
+              privacy policies.
+            </p>
+          </div>
+
+          <div class="space-y-3">
+            <h2 class="text-xl font-semibold text-slate-900">10. Children’s privacy</h2>
+            <p>
+              Our services are not directed to children under 13 years of age. We do not knowingly
+              collect personal information from children under 13.
+            </p>
+          </div>
+
+          <div class="space-y-3">
+            <h2 class="text-xl font-semibold text-slate-900">11. International data transfers</h2>
+            <p>
+              Your information may be transferred to and processed in countries other than your own.
+              We ensure appropriate safeguards are in place to protect your information during such
+              transfers.
+            </p>
+          </div>
+
+          <div class="space-y-3">
+            <h2 class="text-xl font-semibold text-slate-900">12. Changes to this policy</h2>
+            <p>
+              We may update this Privacy Policy from time to time. We will notify you of any changes
+              by posting the new policy on this page and updating the “Last updated” date.
+            </p>
+          </div>
+
+          <div class="space-y-3">
+            <h2 class="text-xl font-semibold text-slate-900">13. Contact us</h2>
+            <p>If you have any questions about this Privacy Policy or our privacy practices:</p>
+            <ul class="list-disc space-y-1 pl-5">
+              <li>Email: <a href="mailto:info@prelyct.com" class="text-accent">info@prelyct.com</a></li>
+              <li>Phone / WhatsApp: <a href="https://wa.me/79966632943" class="text-accent">+79966632943</a></li>
+              <li>Address: Accra, Ghana</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="border-t border-slate-200 bg-white py-10">
+      <div class="mx-auto grid max-w-6xl gap-8 px-6 md:grid-cols-2">
+        <div>
+          <a href="index.html" class="flex items-center gap-2">
+            <img src="images/logo.png" alt="Prelyct logo" class="h-9 w-9" />
+            <span class="text-lg font-semibold text-slate-900">Prelyct</span>
+          </a>
+          <p class="mt-3 text-sm text-slate-500">
+            Secure digital tools for campuses and organisations across Ghana and West Africa.
+          </p>
+        </div>
+        <div class="grid grid-cols-2 gap-4 text-sm text-slate-600 sm:grid-cols-4">
+          <div>
+            <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Products</p>
+            <a href="soleva-votes.html" class="mt-3 block hover:text-accent">Prelyct Votes</a>
+            <a href="soleva-hostels.html" class="mt-2 block hover:text-accent">Prelyct Hostels</a>
+          </div>
+          <div>
+            <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Services</p>
+            <a href="web-development.html" class="mt-3 block hover:text-accent">Web &amp; App Dev</a>
+            <a href="graphic-design.html" class="mt-2 block hover:text-accent">Creative Studio</a>
+            <a href="ms-suite-services.html" class="mt-2 block hover:text-accent">Microsoft Office Studio</a>
+          </div>
+          <div>
+            <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Company</p>
+            <a href="about.html" class="mt-3 block hover:text-accent">About</a>
+            <a href="our-work.html" class="mt-2 block hover:text-accent">Our Work</a>
+            <a href="contact.html" class="mt-2 block hover:text-accent">Contact</a>
+          </div>
+          <div>
+            <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Connect</p>
+            <a href="mailto:info@prelyct.com" class="mt-3 block hover:text-accent">info@prelyct.com</a>
+            <a href="https://wa.me/79966632943" class="mt-2 block hover:text-accent">WhatsApp</a>
+          </div>
+        </div>
+      </div>
+      <div class="border-t border-slate-200 py-4">
+        <p class="text-center text-xs text-slate-400">
+          © <span id="year"></span> Prelyct · Ghana
+        </p>
+      </div>
+    </footer>
+
+    <script>
+      document.getElementById('mobile-toggle')?.addEventListener('click', () => {
+        document.getElementById('mobile-nav')?.classList.toggle('hidden');
+      });
+      const yearEl = document.getElementById('year');
+      if (yearEl) yearEl.textContent = new Date().getFullYear();
+    </script>
+  </body>
+</html>
+
