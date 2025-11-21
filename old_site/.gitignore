@@ -1,0 +1,92 @@
+# ==============================================
+# PRELYCT WEBSITE .GITIGNORE
+# ==============================================
+
+# Email Configuration (Contains sensitive data)
+config/email-config.php
+
+# Logs
+backend/submissions.log
+backend/rate-limit.json
+*.log
+
+# Composer
+vendor/
+composer.lock
+
+# Node.js (if using build tools)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build outputs
+dist/
+build/
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# IDE and Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+*.cache
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# Database files
+*.sqlite
+*.db
+
+# Upload directories (if any)
+uploads/
+files/
+
+# Cache directories
+cache/
+tmp/
+
+# Security files
+.htaccess.backup
+web.config.backup
+
+# Package files
+*.zip
+*.tar.gz
+*.rar
+
+# Local development
+local/
+dev/
+
+# Testing
+coverage/
+.phpunit.result.cache
+
+# Documentation build
+docs/_build/
+
+# ==============================================
+# END OF .GITIGNORE
+# ==============================================

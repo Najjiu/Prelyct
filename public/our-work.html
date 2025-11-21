@@ -1,0 +1,260 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Our Work · Prelyct Case Studies & Highlights</title>
+    <meta
+      name="description"
+      content="See how Prelyct partners with campuses, organisations, and startups across West Africa to deliver elections, housing platforms, and digital experiences."
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              accent: '#2563eb',
+              accentSoft: '#60a5fa',
+            },
+            fontFamily: {
+              sans: ['Inter', 'ui-sans-serif', 'system-ui'],
+            },
+          },
+        },
+      };
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="bg-white font-sans text-slate-800">
+    <header class="sticky top-0 z-50 border-b border-slate-200 bg-white/90 backdrop-blur">
+      <div class="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+        <a href="index.html" class="flex items-center gap-2">
+          <img src="images/logo.png" alt="Prelyct logo" class="h-10 w-10" />
+          <span class="text-xl font-semibold tracking-tight text-slate-900">Prelyct</span>
+        </a>
+        <nav class="hidden items-center gap-8 text-sm font-medium text-slate-600 lg:flex">
+          <div class="relative group">
+            <button class="inline-flex items-center gap-1 transition hover:text-accent">
+              Products
+              <svg class="h-3 w-3" viewBox="0 0 12 12" fill="none">
+                <path d="M3 4.5 6 7.5 9 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="absolute left-0 top-full pt-2 hidden w-60 rounded-xl border border-slate-200 bg-white p-4 shadow-xl group-hover:block">
+              <a href="soleva-votes.html" class="block rounded-lg p-3 text-slate-700 transition hover:bg-slate-50">Prelyct Votes</a>
+              <a href="soleva-hostels.html" class="mt-1 block rounded-lg p-3 text-slate-700 transition hover:bg-slate-50">Prelyct Hostels</a>
+            </div>
+          </div>
+          <div class="relative group">
+            <button class="inline-flex items-center gap-1 transition hover:text-accent">
+              Services
+              <svg class="h-3 w-3" viewBox="0 0 12 12" fill="none">
+                <path d="M3 4.5 6 7.5 9 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="absolute left-0 top-full pt-2 hidden w-64 rounded-xl border border-slate-200 bg-white p-4 shadow-xl group-hover:block">
+              <a href="web-development.html" class="block rounded-lg p-3 text-slate-700 transition hover:bg-slate-50">Web &amp; App Development</a>
+              <a href="graphic-design.html" class="mt-1 block rounded-lg p-3 text-slate-700 transition hover:bg-slate-50">Creative Studio</a>
+              <a href="ms-suite-services.html" class="mt-1 block rounded-lg p-3 text-slate-700 transition hover:bg-slate-50">Microsoft Office Studio</a>
+            </div>
+          </div>
+          <a href="about.html" class="transition hover:text-accent">About</a>
+          <a href="our-work.html" class="text-slate-900">Our Work</a>
+          <a href="contact.html" class="transition hover:text-accent">Contact</a>
+        </nav>
+        <div class="hidden items-center gap-3 lg:flex">
+          <a href="/auth/sign-in" class="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-accent hover:text-accent">Prelyct Votes Dashboard</a>
+          <a href="soleva-votes.html" class="rounded-full bg-accent px-4 py-2 text-sm font-semibold text-white transition hover:bg-accentSoft">Launch a Vote</a>
+        </div>
+        <button id="mobile-toggle" class="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-slate-200 text-slate-600 lg:hidden">
+          <span class="sr-only">Toggle navigation</span>
+          <svg class="h-5 w-5" viewBox="0 0 20 20" fill="none">
+            <path d="M3 7h14M3 13h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+          </svg>
+        </button>
+      </div>
+      <div id="mobile-nav" class="hidden border-t border-slate-200 bg-white px-6 py-4 lg:hidden">
+        <div class="space-y-3 text-sm font-medium text-slate-700">
+          <div>
+            <p class="text-xs uppercase tracking-wide text-slate-400">Products</p>
+            <a href="soleva-votes.html" class="mt-2 block rounded-lg bg-slate-50 px-3 py-2">Prelyct Votes</a>
+            <a href="soleva-hostels.html" class="mt-1 block rounded-lg bg-slate-50 px-3 py-2">Prelyct Hostels</a>
+          </div>
+          <div>
+            <p class="text-xs uppercase tracking-wide text-slate-400">Services</p>
+            <a href="web-development.html" class="mt-2 block rounded-lg bg-slate-50 px-3 py-2">Web &amp; App Development</a>
+            <a href="graphic-design.html" class="mt-1 block rounded-lg bg-slate-50 px-3 py-2">Creative Studio</a>
+            <a href="ms-suite-services.html" class="mt-1 block rounded-lg bg-slate-50 px-3 py-2">Microsoft Office Studio</a>
+          </div>
+          <a href="about.html" class="block rounded-lg bg-slate-50 px-3 py-2">About</a>
+          <a href="our-work.html" class="block rounded-lg bg-slate-50 px-3 py-2 text-slate-900">Our Work</a>
+          <a href="contact.html" class="block rounded-lg bg-slate-50 px-3 py-2">Contact</a>
+          <div class="flex gap-3 pt-2">
+            <a href="/auth/sign-in" class="flex-1 rounded-full border border-slate-300 px-4 py-2 text-center text-sm font-semibold text-slate-700">Prelyct Votes Dashboard</a>
+            <a href="soleva-votes.html" class="flex-1 rounded-full bg-accent px-4 py-2 text-center text-sm font-semibold text-white">Launch a Vote</a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="bg-slate-50 py-16">
+        <div class="mx-auto max-w-4xl px-6 text-center">
+          <p class="text-sm font-semibold uppercase tracking-[0.3em] text-accent">Case studies</p>
+          <h1 class="mt-4 text-4xl font-bold text-slate-900">Work that keeps campuses, organisations, and startups moving</h1>
+          <p class="mt-3 text-lg text-slate-600">
+            Prelyct partners with teams across Ghana and West Africa to deliver secure elections, housing platforms, digital services, and storytelling that convert.
+          </p>
+        </div>
+      </section>
+
+      <section class="py-16">
+        <div class="mx-auto max-w-6xl px-6">
+          <div class="grid gap-6 md:grid-cols-2">
+            <article class="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+              <div class="flex items-center justify-between">
+                <span class="rounded-full bg-accent/10 px-3 py-1 text-xs font-semibold uppercase text-accent">Election Ops</span>
+                <span class="text-xs font-semibold text-slate-400">University of Ghana SRC</span>
+              </div>
+              <h2 class="mt-4 text-2xl font-semibold text-slate-900">Rebuilding trust in student elections</h2>
+              <p class="mt-3 text-sm text-slate-600">
+                Prelyct Votes deployed across web and USSD for 24,000 eligible voters. Live dashboards, anomaly alerts, and certified results delivered in under 30 minutes post-vote.
+              </p>
+              <ul class="mt-4 space-y-2 text-sm text-slate-600">
+                <li>• 63% turnout (up 22% YoY)</li>
+                <li>• 8,200 voters onboarded via Supabase automations</li>
+                <li>• Result certification shared with EC, SRC, and press in minutes</li>
+              </ul>
+            </article>
+            <article class="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+              <div class="flex items-center justify-between">
+                <span class="rounded-full bg-accent/10 px-3 py-1 text-xs font-semibold uppercase text-accent">Housing</span>
+                <span class="text-xs font-semibold text-slate-400">Private hostels · Kumasi</span>
+              </div>
+              <h2 class="mt-4 text-2xl font-semibold text-slate-900">Digitising hostel bookings with trust</h2>
+              <p class="mt-3 text-sm text-slate-600">
+                We designed the Prelyct Hostels MVP: verified listings, escrow payments, and landlord dashboards. Beta launch across 17 hostels with a combined 2,800 beds.
+              </p>
+              <ul class="mt-4 space-y-2 text-sm text-slate-600">
+                <li>• 100% of bookings handled with escrow</li>
+                <li>• 420 tenant maintenance issues resolved via dashboards</li>
+                <li>• 92% satisfaction rating across student surveys</li>
+              </ul>
+            </article>
+            <article class="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+              <div class="flex items-center justify-between">
+                <span class="rounded-full bg-accent/10 px-3 py-1 text-xs font-semibold uppercase text-accent">SaaS</span>
+                <span class="text-xs font-semibold text-slate-400">Fintech startup · Accra</span>
+              </div>
+              <h2 class="mt-4 text-2xl font-semibold text-slate-900">Building a collections dashboard in 6 weeks</h2>
+              <p class="mt-3 text-sm text-slate-600">
+                A micro-lending startup needed a collections platform and reporting layer. We delivered a Supabase-backed dashboard, agent mobile app, and analytics in under 45 days.
+              </p>
+              <ul class="mt-4 space-y-2 text-sm text-slate-600">
+                <li>• 20% reduction in default rate within first quarter</li>
+                <li>• Real-time performance dashboards &amp; automated alerts</li>
+                <li>• Agent mobile app with offline sync and biometrics</li>
+              </ul>
+            </article>
+            <article class="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+              <div class="flex items-center justify-between">
+                <span class="rounded-full bg-accent/10 px-3 py-1 text-xs font-semibold uppercase text-accent">Creative</span>
+                <span class="text-xs font-semibold text-slate-400">Development finance client</span>
+              </div>
+              <h2 class="mt-4 text-2xl font-semibold text-slate-900">Investor decks that unlocked funding</h2>
+              <p class="mt-3 text-sm text-slate-600">
+                Produced a suite of investor and board decks highlighting impact metrics and growth plans. Included motion-ready slides, speaker coaching, and one-page summary sheets.
+              </p>
+              <ul class="mt-4 space-y-2 text-sm text-slate-600">
+                <li>• $3.5M in commitments within 6 months</li>
+                <li>• Universal template library for internal teams</li>
+                <li>• Video explainers and motion bumpers for announcements</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="border-t border-slate-200 bg-slate-50 py-16">
+        <div class="mx-auto max-w-6xl px-6">
+          <div class="rounded-4xl border border-slate-200 bg-white px-8 py-12 shadow-xl">
+            <div class="flex flex-col items-start gap-6 lg:flex-row lg:items-center lg:justify-between">
+              <div>
+                <p class="text-sm font-semibold uppercase tracking-[0.3em] text-accent">Let’s collaborate</p>
+                <h2 class="mt-3 text-3xl font-bold text-slate-900">
+                  Ready to add your project to our partnership list?
+                </h2>
+                <p class="mt-2 text-slate-600">
+                  Whether you’re planning elections, launching a digital product, or rebranding, Prelyct has specialists ready to help.
+                </p>
+              </div>
+              <div class="flex flex-wrap gap-3">
+                <a href="contact.html" class="rounded-full bg-accent px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-accent/30 transition hover:bg-accentSoft">Talk to us</a>
+                <a href="about.html" class="rounded-full border border-slate-300 px-6 py-3 text-sm font-semibold text-slate-700 transition hover:border-accent hover:text-accent">Learn about our team</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="border-t border-slate-200 bg-white py-10">
+      <div class="mx-auto grid max-w-6xl gap-8 px-6 md:grid-cols-2">
+        <div>
+          <a href="index.html" class="flex items-center gap-2">
+            <img src="images/logo.png" alt="Prelyct logo" class="h-9 w-9" />
+            <span class="text-lg font-semibold text-slate-900">Prelyct</span>
+          </a>
+          <p class="mt-3 text-sm text-slate-500">
+            Secure digital tools for campuses and organisations across Ghana and West Africa.
+          </p>
+        </div>
+        <div class="grid grid-cols-2 gap-4 text-sm text-slate-600 sm:grid-cols-4">
+          <div>
+            <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Products</p>
+            <a href="soleva-votes.html" class="mt-3 block hover:text-accent">Prelyct Votes</a>
+            <a href="soleva-hostels.html" class="mt-2 block hover:text-accent">Prelyct Hostels</a>
+          </div>
+          <div>
+            <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Services</p>
+            <a href="web-development.html" class="mt-3 block hover:text-accent">Web &amp; App Dev</a>
+            <a href="graphic-design.html" class="mt-2 block hover:text-accent">Creative Studio</a>
+            <a href="ms-suite-services.html" class="mt-2 block hover:text-accent">Microsoft Office Studio</a>
+          </div>
+          <div>
+            <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Company</p>
+            <a href="about.html" class="mt-3 block hover:text-accent">About</a>
+            <a href="our-work.html" class="mt-2 block hover:text-accent">Our Work</a>
+            <a href="contact.html" class="mt-2 block hover:text-accent">Contact</a>
+          </div>
+          <div>
+            <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Connect</p>
+            <a href="mailto:info@prelyct.com" class="mt-3 block hover:text-accent">info@prelyct.com</a>
+            <a href="https://wa.me/79966632943" class="mt-2 block hover:text-accent">WhatsApp</a>
+          </div>
+        </div>
+      </div>
+      <div class="border-t border-slate-200 py-4">
+        <p class="text-center text-xs text-slate-400">
+          © <span id="year"></span> Prelyct · Ghana
+        </p>
+      </div>
+    </footer>
+
+    <script>
+      document.getElementById('mobile-toggle')?.addEventListener('click', () => {
+        document.getElementById('mobile-nav')?.classList.toggle('hidden');
+      });
+      const yearEl = document.getElementById('year');
+      if (yearEl) yearEl.textContent = new Date().getFullYear();
+    </script>
+  </body>
+</html>
+
