@@ -1,24 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { Resend } from 'resend'
 
 /**
- * API route to send emails using Resend
- * Make sure to set RESEND_API_KEY in your environment variables
+ * API route to send emails
+ * In production, integrate with an email service like SendGrid, Resend, or AWS SES
  */
-
-// Lazy initialization - only create Resend client when needed
-function getResendClient() {
-  const apiKey = process.env.RESEND_API_KEY
-  if (!apiKey) {
-    throw new Error('RESEND_API_KEY is not configured')
-  }
-  return new Resend(apiKey)
-}
-
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { to, subject, html, text, replyTo } = body
+    const { to, subject, html, text } = body
 
     if (!to || !subject || !html) {
       return NextResponse.json(
@@ -27,37 +16,38 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Check if Resend API key is configured
-    if (!process.env.RESEND_API_KEY) {
-      console.error('RESEND_API_KEY is not configured')
-      return NextResponse.json(
-        { success: false, message: 'Email service is not configured. Please contact the administrator.' },
-        { status: 500 }
-      )
-    }
+    // TODO: Integrate with actual email service
+    // Example with Resend:
+    // const response = await fetch('https://api.resend.com/emails', {
+    //   method: 'POST',
+    //   headers: {
+    //     'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
+    //     'Content-Type': 'application/json',
+    //   },
+    //   body: JSON.stringify({
+    //     from: 'notifications@prelyct.com',
+    //     to,
+    //     subject,
+    //     html,
+    //     text,
+    //   }),
+    // })
+    // 
+    // if (!response.ok) {
+    //   const error = await response.json()
+    //   throw new Error(error.message || 'Failed to send email')
+    // }
 
-    // Create Resend client only when needed (lazy initialization)
-    const resend = getResendClient()
-
-    // Send email using Resend
-    const { data, error } = await resend.emails.send({
-      from: process.env.RESEND_FROM_EMAIL || 'Prelyct <onboarding@resend.dev>',
-      to: Array.isArray(to) ? to : [to],
+    // For now, log the email (in production, remove this)
+    console.log('📧 Email would be sent:', {
+      to,
       subject,
-      html,
-      text: text || html.replace(/<[^>]*>/g, ''), // Fallback to plain text if not provided
-      replyTo: replyTo || undefined,
+      html: html.substring(0, 100) + '...',
     })
-
-    if (error) {
-      console.error('Resend API error:', error)
-      throw new Error(error.message || 'Failed to send email')
-    }
 
     return NextResponse.json({ 
       success: true, 
-      message: 'Email sent successfully',
-      id: data?.id
+      message: 'Email sent successfully (logged in development)' 
     })
   } catch (error: any) {
     console.error('Error in email API:', error)
