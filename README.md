@@ -49,8 +49,8 @@ Visit [http://localhost:3000](http://localhost:3000).
 | `BLOCKCHAIN_RPC_URL` | RPC endpoint for vote notarization |
 | `BLOCKCHAIN_CONTRACT_ADDRESS` | Contract used for notarizing results |
 | `BLOCKCHAIN_PRIVATE_KEY` | Wallet key for signing chain transactions |
-
-Add any other provider-specific secrets (Resend, etc.) if you enable those integrations.
+| `RESEND_API_KEY` | **Required for contact form emails** - Get from [resend.com](https://resend.com) |
+| `RESEND_FROM_EMAIL` | (Optional) From email address, e.g., `Prelyct <info@prelyct.com>` |
 
 ## Production Build & Deploy
 
