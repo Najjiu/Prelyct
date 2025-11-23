@@ -1,9 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { Resend } from 'resend'
 
 /**
  * API route to handle contact form submissions
  * Sends emails to info@prelyct.com
  */
+function getResendClient() {
+  const apiKey = process.env.RESEND_API_KEY
+  if (!apiKey) {
+    throw new Error('RESEND_API_KEY is not configured')
+  }
+  return new Resend(apiKey)
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
@@ -23,6 +32,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { success: false, message: 'Please enter a valid email address.' },
         { status: 400 }
+      )
+    }
+
+    // Check if Resend API key is configured
+    if (!process.env.RESEND_API_KEY) {
+      console.error('RESEND_API_KEY is not configured')
+      return NextResponse.json(
+        { success: false, message: 'Email service is not configured. Please contact the administrator.' },
+        { status: 500 }
       )
     }
 
@@ -100,25 +118,20 @@ This message was sent from the Prelyct contact form.
 You can reply directly to this email to respond to ${name}.
     `.trim()
 
-    // Send email via the email API route
-    // Use internal API call (server-to-server)
-    const emailResponse = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/emails/send`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        to: 'info@prelyct.com',
-        subject,
-        html,
-        text,
-        replyTo: email, // Set reply-to to the sender's email
-      }),
+    // Send email directly using Resend (no internal HTTP call needed)
+    const resend = getResendClient()
+    const { data, error } = await resend.emails.send({
+      from: process.env.RESEND_FROM_EMAIL || 'Prelyct <onboarding@resend.dev>',
+      to: 'info@prelyct.com',
+      subject,
+      html,
+      text,
+      replyTo: email, // Set reply-to to the sender's email
     })
 
-    if (!emailResponse.ok) {
-      const errorData = await emailResponse.json().catch(() => ({}))
-      throw new Error(errorData.message || 'Failed to send email')
+    if (error) {
+      console.error('Resend API error:', error)
+      throw new Error(error.message || 'Failed to send email')
     }
 
     return NextResponse.json({

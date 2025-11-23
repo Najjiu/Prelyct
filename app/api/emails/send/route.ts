@@ -5,7 +5,15 @@ import { Resend } from 'resend'
  * API route to send emails using Resend
  * Make sure to set RESEND_API_KEY in your environment variables
  */
-const resend = new Resend(process.env.RESEND_API_KEY)
+
+// Lazy initialization - only create Resend client when needed
+function getResendClient() {
+  const apiKey = process.env.RESEND_API_KEY
+  if (!apiKey) {
+    throw new Error('RESEND_API_KEY is not configured')
+  }
+  return new Resend(apiKey)
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -27,6 +35,9 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       )
     }
+
+    // Create Resend client only when needed (lazy initialization)
+    const resend = getResendClient()
 
     // Send email using Resend
     const { data, error } = await resend.emails.send({
