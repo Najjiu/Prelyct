@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo, lazy, Suspense } from 'react'
 import { useParams } from 'next/navigation'
+import QRCode from 'react-qr-code'
 import Card from '@/components/Card'
 import Button from '@/components/Button'
 import Badge from '@/components/Badge'
@@ -26,7 +27,7 @@ export default function ElectionDetailPage() {
   const [activeTab, setActiveTab] = useState<Tab>('overview')
   const [showShareModal, setShowShareModal] = useState(false)
   const [copiedLink, setCopiedLink] = useState(false)
-  const [shareMethod, setShareMethod] = useState<'link' | 'email' | 'sms'>('link')
+  const [shareMethod, setShareMethod] = useState<'link' | 'email' | 'sms' | 'qr' | 'social'>('qr')
   const [error, setError] = useState('')
   const [updatingStatus, setUpdatingStatus] = useState(false)
   const { alert: alertState, showAlert, closeAlert } = useAlert()
@@ -488,19 +489,68 @@ function ShareModal({
   election: Election
   votingLink: string
   onClose: () => void
-  shareMethod: 'link' | 'email' | 'sms'
-  setShareMethod: (method: 'link' | 'email' | 'sms') => void
+  shareMethod: 'link' | 'email' | 'sms' | 'qr' | 'social'
+  setShareMethod: (method: 'link' | 'email' | 'sms' | 'qr' | 'social') => void
   copiedLink: boolean
   setCopiedLink: (copied: boolean) => void
 }) {
+  const shareText = `🗳️ Vote in ${election.name}!\n\n${votingLink}`
+  const shareUrl = encodeURIComponent(votingLink)
+  const shareTitle = encodeURIComponent(`Vote in ${election.name}`)
+
+  const handleSocialShare = (platform: string) => {
+    const urls: Record<string, string> = {
+      whatsapp: `https://wa.me/?text=${encodeURIComponent(shareText)}`,
+      facebook: `https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`,
+      twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${shareUrl}`,
+      linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${shareUrl}`,
+      email: `mailto:?subject=${shareTitle}&body=${encodeURIComponent(shareText)}`,
+      telegram: `https://t.me/share/url?url=${shareUrl}&text=${encodeURIComponent(shareText)}`,
+    }
+    const url = urls[platform]
+    if (url) {
+      window.open(url, '_blank', 'width=600,height=400')
+    }
+  }
+
+  const downloadQRCode = () => {
+    const svg = document.getElementById('qr-code-svg')
+    if (!svg) return
+    
+    const svgData = new XMLSerializer().serializeToString(svg)
+    const canvas = document.createElement('canvas')
+    const ctx = canvas.getContext('2d')
+    const img = new Image()
+    
+    img.onload = () => {
+      canvas.width = img.width
+      canvas.height = img.height
+      ctx?.drawImage(img, 0, 0)
+      canvas.toBlob((blob) => {
+        if (blob) {
+          const url = URL.createObjectURL(blob)
+          const a = document.createElement('a')
+          a.href = url
+          a.download = `vote-qr-${election.name.replace(/\s+/g, '-').toLowerCase()}.png`
+          document.body.appendChild(a)
+          a.click()
+          document.body.removeChild(a)
+          URL.revokeObjectURL(url)
+        }
+      })
+    }
+    
+    img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)))
+  }
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <Card className="max-w-md w-full max-h-[90vh] overflow-y-auto">
+      <Card className="max-w-lg w-full max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-lg font-semibold text-gray-900">Share Voting Link</h3>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600"
+            className="text-gray-400 hover:text-gray-600 transition"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -510,38 +560,122 @@ function ShareModal({
 
         <div className="space-y-4">
           {/* Share Method Tabs */}
-          <div className="flex gap-2 border-b border-gray-200">
-            <button
-              onClick={() => setShareMethod('link')}
-              className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
-                shareMethod === 'link'
-                  ? 'border-primary text-primary'
-                  : 'border-transparent text-gray-500 hover:text-gray-700'
-              }`}
-            >
-              Link
-            </button>
-            <button
-              onClick={() => setShareMethod('email')}
-              className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
-                shareMethod === 'email'
-                  ? 'border-primary text-primary'
-                  : 'border-transparent text-gray-500 hover:text-gray-700'
-              }`}
-            >
-              Email
-            </button>
-            <button
-              onClick={() => setShareMethod('sms')}
-              className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
-                shareMethod === 'sms'
-                  ? 'border-primary text-primary'
-                  : 'border-transparent text-gray-500 hover:text-gray-700'
-              }`}
-            >
-              SMS
-            </button>
+          <div className="flex gap-1 border-b border-gray-200 overflow-x-auto">
+            {[
+              { id: 'qr', label: 'QR Code', icon: '📱' },
+              { id: 'social', label: 'Social', icon: '🔗' },
+              { id: 'link', label: 'Link', icon: '🔗' },
+              { id: 'email', label: 'Email', icon: '📧' },
+              { id: 'sms', label: 'SMS', icon: '💬' },
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setShareMethod(tab.id as any)}
+                className={`px-3 py-2 text-xs sm:text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
+                  shareMethod === tab.id
+                    ? 'border-primary text-primary'
+                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                <span className="mr-1">{tab.icon}</span>
+                {tab.label}
+              </button>
+            ))}
           </div>
+
+          {/* QR Code Sharing */}
+          {shareMethod === 'qr' && (
+            <div className="space-y-4">
+              <div className="text-center">
+                <p className="text-sm font-medium text-gray-700 mb-4">
+                  Scan this QR code to access the voting page
+                </p>
+                <div className="inline-block p-4 bg-white rounded-lg border-2 border-gray-200">
+                  <QRCode
+                    id="qr-code-svg"
+                    value={votingLink}
+                    size={200}
+                    style={{ height: 'auto', maxWidth: '100%', width: '100%' }}
+                    viewBox="0 0 200 200"
+                  />
+                </div>
+                <p className="text-xs text-gray-500 mt-3 mb-4">
+                  Perfect for posters, flyers, and in-person sharing
+                </p>
+                <div className="flex gap-2 justify-center">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={downloadQRCode}
+                    className="flex items-center gap-2"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                    </svg>
+                    Download QR Code
+                  </Button>
+                  <Button
+                    size="sm"
+                    onClick={() => {
+                      navigator.clipboard.writeText(votingLink)
+                      setCopiedLink(true)
+                      setTimeout(() => setCopiedLink(false), 2000)
+                    }}
+                    className="flex items-center gap-2"
+                  >
+                    {copiedLink ? (
+                      <>
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                        Copied!
+                      </>
+                    ) : (
+                      <>
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                        </svg>
+                        Copy Link
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Social Media Sharing */}
+          {shareMethod === 'social' && (
+            <div className="space-y-4">
+              <p className="text-sm font-medium text-gray-700 mb-3">
+                Share on social media platforms
+              </p>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {[
+                  { id: 'whatsapp', label: 'WhatsApp', color: 'bg-green-500 hover:bg-green-600', icon: '💬' },
+                  { id: 'facebook', label: 'Facebook', color: 'bg-blue-600 hover:bg-blue-700', icon: '📘' },
+                  { id: 'twitter', label: 'Twitter', color: 'bg-sky-500 hover:bg-sky-600', icon: '🐦' },
+                  { id: 'telegram', label: 'Telegram', color: 'bg-blue-500 hover:bg-blue-600', icon: '✈️' },
+                  { id: 'linkedin', label: 'LinkedIn', color: 'bg-blue-700 hover:bg-blue-800', icon: '💼' },
+                  { id: 'email', label: 'Email', color: 'bg-gray-600 hover:bg-gray-700', icon: '📧' },
+                ].map((platform) => (
+                  <button
+                    key={platform.id}
+                    onClick={() => handleSocialShare(platform.id)}
+                    className={`${platform.color} text-white rounded-lg p-4 flex flex-col items-center justify-center gap-2 transition-colors`}
+                  >
+                    <span className="text-2xl">{platform.icon}</span>
+                    <span className="text-xs font-medium">{platform.label}</span>
+                  </button>
+                ))}
+              </div>
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                <p className="text-sm text-blue-800">
+                  <strong>Tip:</strong> Click any platform to open the share dialog. The voting link will be automatically included.
+                </p>
+              </div>
+            </div>
+          )}
 
           {/* Link Sharing */}
           {shareMethod === 'link' && (
@@ -581,14 +715,9 @@ function ShareModal({
           {/* Email Sharing */}
           {shareMethod === 'email' && (
             <div className="space-y-4">
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
-                <p className="text-sm text-yellow-800">
-                  <strong>Note:</strong> Email functionality requires backend integration. For now, copy the link and send it manually.
-                </p>
-              </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Voting Link (copy this)
+                  Email Voting Link
                 </label>
                 <div className="flex gap-2">
                   <input
@@ -600,6 +729,15 @@ function ShareModal({
                   <Button
                     size="sm"
                     onClick={() => {
+                      handleSocialShare('email')
+                    }}
+                  >
+                    Open Email
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
                       navigator.clipboard.writeText(votingLink)
                       setCopiedLink(true)
                       setTimeout(() => setCopiedLink(false), 2000)
@@ -608,6 +746,11 @@ function ShareModal({
                     {copiedLink ? 'Copied!' : 'Copy'}
                   </Button>
                 </div>
+              </div>
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                <p className="text-sm text-yellow-800">
+                  <strong>Note:</strong> Click "Open Email" to create a new email with the voting link, or copy the link to paste into your email client.
+                </p>
               </div>
             </div>
           )}
@@ -615,14 +758,9 @@ function ShareModal({
           {/* SMS Sharing */}
           {shareMethod === 'sms' && (
             <div className="space-y-4">
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
-                <p className="text-sm text-yellow-800">
-                  <strong>Note:</strong> SMS functionality requires backend integration. For now, copy the link and send it manually.
-                </p>
-              </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Voting Link (copy this)
+                  SMS Voting Link
                 </label>
                 <div className="flex gap-2">
                   <input
@@ -634,6 +772,16 @@ function ShareModal({
                   <Button
                     size="sm"
                     onClick={() => {
+                      const smsUrl = `sms:?body=${encodeURIComponent(shareText)}`
+                      window.location.href = smsUrl
+                    }}
+                  >
+                    Open SMS
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
                       navigator.clipboard.writeText(votingLink)
                       setCopiedLink(true)
                       setTimeout(() => setCopiedLink(false), 2000)
@@ -643,33 +791,15 @@ function ShareModal({
                   </Button>
                 </div>
               </div>
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                <p className="text-sm text-yellow-800">
+                  <strong>Note:</strong> Click "Open SMS" to create a new SMS with the voting link, or copy the link to paste into your messaging app.
+                </p>
+              </div>
             </div>
           )}
         </div>
       </Card>
-
-      {/* Alert Dialog */}
-      <AlertDialog
-        open={alertState.open}
-        title={alertState.title}
-        message={alertState.message}
-        type={alertState.type}
-        confirmText={alertState.confirmText}
-        onClose={closeAlert}
-        onConfirm={alertState.onConfirm}
-      />
-
-      {/* Confirm Dialog */}
-      <ConfirmDialog
-        open={confirmState.open}
-        title={confirmState.title || ''}
-        message={confirmState.message || ''}
-        type={confirmState.type}
-        confirmText={confirmState.confirmText}
-        cancelText={confirmState.cancelText}
-        onClose={closeConfirm}
-        onConfirm={confirmState.onConfirm || (() => {})}
-      />
     </div>
   )
 }

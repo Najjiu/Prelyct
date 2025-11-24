@@ -31,10 +31,14 @@ export default function AlertsPage() {
       const response = await fetch(url)
       const data = await response.json()
       if (data.success) {
-        setAlerts(data.data)
+        setAlerts(data.data || [])
+      } else {
+        console.error('Failed to load alerts:', data.error)
+        setAlerts([])
       }
     } catch (error) {
       console.error('Failed to load alerts:', error)
+      setAlerts([])
     } finally {
       setLoading(false)
     }
