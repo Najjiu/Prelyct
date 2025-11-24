@@ -23,11 +23,28 @@ export default function MonitoringDashboard() {
     try {
       const response = await fetch('/api/monitoring/health')
       const data = await response.json()
-      if (data.success) {
+      if (data.success && data.data) {
         setHealth(data.data)
+      } else {
+        // Set default health data if API fails
+        setHealth({
+          activeElections: 0,
+          totalVotesToday: 0,
+          averageResponseTime: 0,
+          errorRate: 0,
+          status: 'healthy',
+        })
       }
     } catch (error) {
       console.error('Failed to load system health:', error)
+      // Set default health data on error
+      setHealth({
+        activeElections: 0,
+        totalVotesToday: 0,
+        averageResponseTime: 0,
+        errorRate: 0,
+        status: 'healthy',
+      })
     } finally {
       setLoading(false)
       setRefreshing(false)

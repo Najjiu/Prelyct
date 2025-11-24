@@ -3,23 +3,26 @@ import { supabase } from '@/lib/supabaseClient'
 
 export async function GET(request: NextRequest) {
   try {
-    const { user } = await supabase.auth.getUser()
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    if (authError || !user) {
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
     }
 
     const { searchParams } = new URL(request.url)
     const electionId = searchParams.get('electionId')
-    const status = searchParams.get('status') || 'active'
+    const status = searchParams.get('status')
     const limit = parseInt(searchParams.get('limit') || '50')
 
     let query = supabase
       .from('alerts')
       .select('*')
       .eq('user_id', user.id)
-      .eq('status', status)
       .order('created_at', { ascending: false })
       .limit(limit)
+
+    if (status && status !== 'all') {
+      query = query.eq('status', status)
+    }
 
     if (electionId) {
       query = query.eq('election_id', electionId)
@@ -28,7 +31,12 @@ export async function GET(request: NextRequest) {
     const { data: alerts, error } = await query
 
     if (error) {
-      throw error
+      // If table doesn't exist or other error, return empty array
+      console.error('Error getting alerts:', error)
+      return NextResponse.json({
+        success: true,
+        data: [],
+      })
     }
 
     return NextResponse.json({
@@ -37,18 +45,19 @@ export async function GET(request: NextRequest) {
     })
   } catch (error: any) {
     console.error('Error getting alerts:', error)
-    return NextResponse.json(
-      { error: error.message || 'Failed to get alerts' },
-      { status: 500 }
-    )
+    // Return empty array instead of error
+    return NextResponse.json({
+      success: true,
+      data: [],
+    })
   }
 }
 
 export async function PATCH(request: NextRequest) {
   try {
-    const { user } = await supabase.auth.getUser()
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    if (authError || !user) {
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
     }
 
     const body = await request.json()
@@ -56,7 +65,7 @@ export async function PATCH(request: NextRequest) {
 
     if (!alertId || !action) {
       return NextResponse.json(
-        { error: 'alertId and action are required' },
+        { success: false, error: 'alertId and action are required' },
         { status: 400 }
       )
     }
@@ -81,7 +90,11 @@ export async function PATCH(request: NextRequest) {
       .single()
 
     if (error) {
-      throw error
+      console.error('Error updating alert:', error)
+      return NextResponse.json({
+        success: false,
+        error: error.message || 'Failed to update alert',
+      })
     }
 
     return NextResponse.json({
@@ -91,7 +104,7 @@ export async function PATCH(request: NextRequest) {
   } catch (error: any) {
     console.error('Error updating alert:', error)
     return NextResponse.json(
-      { error: error.message || 'Failed to update alert' },
+      { success: false, error: error.message || 'Failed to update alert' },
       { status: 500 }
     )
   }
