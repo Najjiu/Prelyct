@@ -19,6 +19,52 @@ const nextConfig = {
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
   },
   
+  // Rewrites to hide .html extension from URLs
+  async rewrites() {
+    return [
+      {
+        source: '/contact',
+        destination: '/contact.html',
+      },
+      {
+        source: '/about',
+        destination: '/about.html',
+      },
+      {
+        source: '/our-work',
+        destination: '/our-work.html',
+      },
+      {
+        source: '/soleva-votes',
+        destination: '/soleva-votes.html',
+      },
+      {
+        source: '/soleva-hostels',
+        destination: '/soleva-hostels.html',
+      },
+      {
+        source: '/web-development',
+        destination: '/web-development.html',
+      },
+      {
+        source: '/graphic-design',
+        destination: '/graphic-design.html',
+      },
+      {
+        source: '/ms-suite-services',
+        destination: '/ms-suite-services.html',
+      },
+      {
+        source: '/privacy-policy',
+        destination: '/privacy-policy.html',
+      },
+      {
+        source: '/terms-of-service',
+        destination: '/terms-of-service.html',
+      },
+    ]
+  },
+
   // Experimental features for better performance
   // Serve static files from root
   async headers() {
