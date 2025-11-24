@@ -5,12 +5,25 @@ import { Resend } from 'resend'
  * API route to handle contact form submissions
  * Sends emails to info@prelyct.com
  */
+
+// CORS headers for cross-origin requests
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type',
+}
+
 function getResendClient() {
   const apiKey = process.env.RESEND_API_KEY
   if (!apiKey) {
     throw new Error('RESEND_API_KEY is not configured')
   }
   return new Resend(apiKey)
+}
+
+// Handle OPTIONS request for CORS
+export async function OPTIONS() {
+  return NextResponse.json({}, { headers: corsHeaders })
 }
 
 export async function POST(request: NextRequest) {
@@ -134,15 +147,27 @@ You can reply directly to this email to respond to ${name}.
       throw new Error(error.message || 'Failed to send email')
     }
 
-    return NextResponse.json({
-      success: true,
-      message: 'Thank you for your message! We\'ll get back to you within one business day.',
-    })
+    return NextResponse.json(
+      {
+        success: true,
+        message: 'Thank you for your message! We\'ll get back to you within one business day.',
+      },
+      { headers: corsHeaders }
+    )
   } catch (error: any) {
     console.error('Contact form API error:', error)
+    
+    // Provide more specific error messages
+    let errorMessage = 'An error occurred. Please try again later.'
+    if (error.message?.includes('RESEND_API_KEY')) {
+      errorMessage = 'Email service is not configured. Please contact the administrator.'
+    } else if (error.message) {
+      errorMessage = error.message
+    }
+    
     return NextResponse.json(
-      { success: false, message: error.message || 'An error occurred. Please try again later.' },
-      { status: 500 }
+      { success: false, message: errorMessage },
+      { status: 500, headers: corsHeaders }
     )
   }
 }
