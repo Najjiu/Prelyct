@@ -7,17 +7,42 @@
     <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png" />
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://www.prelyct.com/about" />
+    <meta property="og:title" content="About Prelyct · Ghana's Digital Studio" />
+    <meta property="og:description" content="Learn about Prelyct, a Ghana-based digital solutions company building secure tools for campuses and organizations." />
+    <meta property="og:image" content="https://www.prelyct.com/images/logo.png" />
+    <meta property="og:image:width" content="512" />
+    <meta property="og:image:height" content="512" />
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary" />
+    <meta property="twitter:url" content="https://www.prelyct.com/about" />
+    <meta property="twitter:title" content="About Prelyct · Ghana's Digital Studio" />
+    <meta property="twitter:description" content="Learn about Prelyct's mission and services." />
+    <meta property="twitter:image" content="https://www.prelyct.com/images/logo.png" />
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
         theme: {
           extend: {
             colors: {
-              accent: '#2563eb',
-              accentSoft: '#60a5fa',
+              charcoal: '#0b1220',
+              midnight: '#111827',
+              accent: {
+                DEFAULT: '#2563eb',
+                soft: '#60a5fa',
+                green: '#10b981',
+                amber: '#f59e0b',
+              },
+            },
+            backgroundImage: {
+              'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+              'gradient-mesh': 'linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%)',
             },
             fontFamily: {
-              sans: ['Inter', 'ui-sans-serif', 'system-ui'],
+              sans: ['Manrope', 'ui-sans-serif', 'system-ui'],
+              display: ['Sora', 'Manrope', 'ui-sans-serif'],
             },
           },
         },
@@ -26,11 +51,57 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "Prelyct",
+        "alternateName": "Prelyct Digital Solutions",
+        "url": "https://www.prelyct.com/",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://www.prelyct.com/images/logo.png",
+          "width": 512,
+          "height": 512
+        },
+        "image": "https://www.prelyct.com/images/logo.png",
+        "description": "Prelyct is a Ghana-based digital solutions company providing secure voting systems, student hostel marketplaces, web development, creative branding, and Microsoft Office services.",
+        "address": {
+          "@type": "PostalAddress",
+          "addressCountry": "GH",
+          "addressLocality": "Accra"
+        },
+        "contactPoint": {
+          "@type": "ContactPoint",
+          "contactType": "customer support",
+          "email": "info@prelyct.com",
+          "availableLanguage": ["en"]
+        },
+        "sameAs": [
+          "https://wa.me/79966632943"
+        ]
+      }
+    </script>
+    <style>
+      @keyframes gradient {
+        0%, 100% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+      }
+      .animate-gradient {
+        background-size: 200% 200%;
+        animation: gradient 8s ease infinite;
+      }
+      html { scroll-behavior: smooth; }
+      body { 
+        background: linear-gradient(135deg, #f8fafc 0%, #ffffff 50%, #eff6ff 100%);
+        background-attachment: fixed;
+      }
+    </style>
   </head>
-  <body class="bg-white font-sans text-slate-800">
+  <body class="font-sans text-slate-800 antialiased">
     <header class="sticky top-0 z-50 border-b border-slate-200 bg-white/90 backdrop-blur">
       <div class="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
         <a href="/" class="flex items-center gap-2">
