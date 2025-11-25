@@ -23,6 +23,10 @@ const nextConfig = {
   async rewrites() {
     return [
       {
+        source: '/index.html',
+        destination: '/',
+      },
+      {
         source: '/contact',
         destination: '/contact.html',
       },
