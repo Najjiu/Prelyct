@@ -10,8 +10,18 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { amount, account_number, channel, account_name, client_reference } = body
 
+    console.log('📥 Payment Initiate Request:', {
+      amount,
+      account_number,
+      channel,
+      account_name,
+      client_reference,
+      api_key_set: !!process.env.NEXT_PUBLIC_BULKCLIX_API_KEY,
+    })
+
     // Validate required fields
     if (!amount || !account_number || !channel || !account_name || !client_reference) {
+      console.error('❌ Missing required fields:', { amount, account_number, channel, account_name, client_reference })
       return NextResponse.json(
         { success: false, message: 'Missing required fields' },
         { status: 400 }
@@ -47,24 +57,37 @@ export async function POST(request: NextRequest) {
     if (!paymentResponse.success) {
       const errorMessage = paymentResponse.message || 'Failed to initiate payment'
       
+      console.error('❌ Payment Initiation Failed:', {
+        errorMessage,
+        paymentResponse,
+      })
+      
       // Provide helpful message for account configuration issues
       if (errorMessage.toLowerCase().includes('not allowed') || 
           errorMessage.toLowerCase().includes('momo collection') ||
-          errorMessage.toLowerCase().includes('contact support')) {
+          errorMessage.toLowerCase().includes('contact support') ||
+          errorMessage.toLowerCase().includes('ip address') ||
+          errorMessage.toLowerCase().includes('not whitelisted') ||
+          errorMessage.toLowerCase().includes('access denied')) {
         return NextResponse.json(
           { 
             success: false, 
-            message: 'Your BulkClix account is not enabled for mobile money collection. Please contact BulkClix support to enable this feature for your account.' 
+            message: `BulkClix Error: ${errorMessage}. Please ensure your server IP address is whitelisted in your BulkClix dashboard and mobile money collection is enabled for your account.` 
           },
           { status: 403 }
         )
       }
       
       return NextResponse.json(
-        { success: false, message: errorMessage },
+        { success: false, message: `BulkClix API Error: ${errorMessage}` },
         { status: 400 }
       )
     }
+
+    console.log('✅ Payment Initiated Successfully:', {
+      transaction_id: paymentResponse.transaction_id,
+      client_reference: paymentResponse.client_reference,
+    })
 
     return NextResponse.json({
       success: true,

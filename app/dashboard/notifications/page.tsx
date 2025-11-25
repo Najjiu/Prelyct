@@ -25,6 +25,9 @@ export default function NotificationsPage() {
 
   useEffect(() => {
     loadNotifications()
+    // Auto-refresh notifications every 30 seconds to catch new votes
+    const interval = setInterval(loadNotifications, 30000)
+    return () => clearInterval(interval)
   }, [])
 
   async function loadNotifications() {
@@ -64,10 +67,17 @@ export default function NotificationsPage() {
       markAsRead(notification.id)
     }
 
-    if (notification.metadata?.electionUrl) {
+    // Navigate based on notification type and metadata
+    if (notification.type === 'vote_update' && notification.metadata?.electionId) {
+      router.push(`/dashboard/votes/${notification.metadata.electionId}`)
+    } else if (notification.metadata?.electionUrl) {
       router.push(notification.metadata.electionUrl)
+    } else if (notification.metadata?.electionId) {
+      router.push(`/dashboard/votes/${notification.metadata.electionId}`)
     } else if (notification.metadata?.invoiceUrl) {
       router.push(notification.metadata.invoiceUrl)
+    } else if (notification.metadata?.invoiceId) {
+      router.push(`/dashboard/invoices/${notification.metadata.invoiceId}`)
     }
   }
 
@@ -79,8 +89,25 @@ export default function NotificationsPage() {
         return '💳'
       case 'vote_update':
         return '🗳️'
+      case 'system':
+        return '⚙️'
       default:
         return '🔔'
+    }
+  }
+
+  function getNotificationColor(type: string) {
+    switch (type) {
+      case 'vote_update':
+        return 'text-green-600 bg-green-50 border-green-200'
+      case 'election_reminder':
+        return 'text-blue-600 bg-blue-50 border-blue-200'
+      case 'payment_alert':
+        return 'text-yellow-600 bg-yellow-50 border-yellow-200'
+      case 'system':
+        return 'text-purple-600 bg-purple-50 border-purple-200'
+      default:
+        return 'text-gray-600 bg-gray-50 border-gray-200'
     }
   }
 
@@ -176,12 +203,12 @@ export default function NotificationsPage() {
             <Card
               key={notification.id}
               className={`cursor-pointer hover:shadow-md transition ${
-                !notification.read ? 'border-l-4 border-l-primary bg-blue-50/50' : ''
-              }`}
+                !notification.read ? `border-l-4 ${getNotificationColor(notification.type).split(' ')[2]}` : ''
+              } ${!notification.read ? 'bg-blue-50/30' : ''}`}
               onClick={() => handleNotificationClick(notification)}
             >
               <div className="flex items-start gap-4">
-                <div className="text-2xl flex-shrink-0">
+                <div className={`text-2xl flex-shrink-0 p-2 rounded-lg ${getNotificationColor(notification.type).split(' ')[1]}`}>
                   {getNotificationIcon(notification.type)}
                 </div>
                 <div className="flex-1 min-w-0">
@@ -192,11 +219,17 @@ export default function NotificationsPage() {
                       {notification.title}
                     </h3>
                     {!notification.read && (
-                      <span className="flex-shrink-0 w-2 h-2 bg-primary rounded-full mt-2"></span>
+                      <span className="flex-shrink-0 w-2 h-2 bg-primary rounded-full mt-2 animate-pulse"></span>
                     )}
                   </div>
                   <p className="text-gray-600 mt-1">{notification.message}</p>
-                  <div className="flex items-center gap-4 mt-2 text-xs text-gray-500">
+                  {notification.type === 'vote_update' && notification.metadata?.voteCount !== undefined && (
+                    <div className="mt-2 inline-flex items-center gap-1 px-2 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold">
+                      <span>Total Votes:</span>
+                      <span className="font-bold">{notification.metadata.voteCount.toLocaleString()}</span>
+                    </div>
+                  )}
+                  <div className="flex items-center gap-4 mt-3 text-xs text-gray-500">
                     <span>{formatTime(notification.created_at)}</span>
                     {notification.email_sent && (
                       <span className="flex items-center gap-1">
@@ -205,6 +238,12 @@ export default function NotificationsPage() {
                         </svg>
                         Email sent
                       </span>
+                    )}
+                    {notification.metadata?.electionName && (
+                      <span className="text-gray-400">•</span>
+                    )}
+                    {notification.metadata?.electionName && (
+                      <span className="text-gray-600 font-medium">{notification.metadata.electionName}</span>
                     )}
                   </div>
                 </div>

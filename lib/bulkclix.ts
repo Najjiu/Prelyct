@@ -102,34 +102,142 @@ export async function initiateBulkClixPayment(
       client_reference: request.client_reference,
     }
 
-    const response = await fetch(`${BULKCLIX_API_URL}/api/v1/payment-api/send/mobilemoney`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': BULKCLIX_API_KEY,
-        'Accept': 'application/json',
-      },
-      body: JSON.stringify(payload),
-    })
+    // Try different possible endpoints based on BulkClix documentation
+    const possibleEndpoints = [
+      '/api/v1/payment-api/send/mobilemoney',
+      '/api/v1/payment-api/send/momo',
+      '/api/v1/payments/mobile-money',
+      '/api/v1/mobile-money/send',
+    ]
+    
+    let lastError: Error | null = null
+    let successfulResponse: any = null
+    
+    for (const endpoint of possibleEndpoints) {
+      const url = `${BULKCLIX_API_URL}${endpoint}`
+      
+      console.log('🔵 BulkClix Request:', {
+        url,
+        payload,
+        headers: {
+          'x-api-key': BULKCLIX_API_KEY ? `${BULKCLIX_API_KEY.substring(0, 10)}...` : 'NOT SET',
+        },
+      })
 
-    const data = await response.json()
+      try {
+            const response = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': BULKCLIX_API_KEY,
+            'Accept': 'application/json',
+          },
+          body: JSON.stringify(payload),
+        })
 
-    if (!response.ok) {
-      throw new Error(data.message || `Payment initiation failed: ${response.statusText}`)
-    }
+        // Get response text first to see raw response
+        const responseText = await response.text()
+        console.log('🔵 BulkClix Raw Response:', {
+          endpoint,
+          status: response.status,
+          statusText: response.statusText,
+          headers: Object.fromEntries(response.headers.entries()),
+          body: responseText,
+        })
 
-    // Check if response indicates success
-    if (data.message && data.message.toLowerCase().includes('success')) {
-      return {
-        success: true,
-        transaction_id: data.data?.transaction_id,
-        client_reference: data.data?.client_reference || request.client_reference,
-        message: data.message || 'Payment initiated successfully',
-        data: data.data,
+        let data: any
+        try {
+          data = JSON.parse(responseText)
+        } catch (e) {
+          console.warn(`⚠️ Endpoint ${endpoint} returned non-JSON response, trying next endpoint...`)
+          lastError = new Error(`Invalid response from ${endpoint}: ${responseText.substring(0, 200)}`)
+          continue
+        }
+
+        console.log('🔵 BulkClix Parsed Response:', data)
+
+        // If we get a 404 or endpoint not found, try next endpoint
+        if (response.status === 404 || response.status === 405) {
+          console.warn(`⚠️ Endpoint ${endpoint} returned ${response.status}, trying next endpoint...`)
+          lastError = new Error(`Endpoint not found: ${endpoint}`)
+          continue
+        }
+
+        if (!response.ok) {
+          const errorMessage = data.message || data.error || data.msg || `Payment initiation failed: ${response.statusText}`
+          console.error('❌ BulkClix Error Response:', {
+            endpoint,
+            status: response.status,
+            data,
+            errorMessage,
+          })
+          
+          // If it's an authentication or IP error, don't try other endpoints
+          if (response.status === 401 || response.status === 403) {
+            throw new Error(errorMessage)
+          }
+          
+          // For other errors, try next endpoint
+          lastError = new Error(errorMessage)
+          continue
+        }
+
+        // Handle different success response formats
+        // Format 1: { message: "success", data: { transaction_id: "..." } }
+        // Format 2: { success: true, transaction_id: "..." }
+        // Format 3: { status: "success", transaction_id: "..." }
+        const isSuccess = 
+          (data.message && data.message.toLowerCase().includes('success')) ||
+          data.success === true ||
+          data.status === 'success' ||
+          data.status === 'successful' ||
+          (data.data && data.data.transaction_id) ||
+          data.transaction_id
+
+        if (isSuccess) {
+          const transactionId = 
+            data.data?.transaction_id || 
+            data.transaction_id || 
+            data.data?.client_reference || 
+            request.client_reference
+
+          console.log('✅ BulkClix Payment Initiated Successfully:', {
+            endpoint,
+            transaction_id: transactionId,
+            client_reference: request.client_reference,
+          })
+
+          successfulResponse = {
+            success: true,
+            transaction_id: transactionId,
+            client_reference: data.data?.client_reference || data.client_reference || request.client_reference,
+            message: data.message || data.msg || 'Payment initiated successfully',
+            data: data.data || data,
+          }
+          break
+        }
+
+        const errorMessage = data.message || data.error || data.msg || 'Payment initiation failed'
+        console.warn(`⚠️ Endpoint ${endpoint} returned unsuccessful response, trying next...`)
+        lastError = new Error(errorMessage)
+      } catch (error: any) {
+        console.warn(`⚠️ Error with endpoint ${endpoint}:`, error.message)
+        lastError = error
+        // Continue to next endpoint unless it's a clear auth/network error
+        if (error.message?.includes('fetch') || error.message?.includes('network')) {
+          throw error
+        }
       }
     }
-
-    throw new Error(data.message || 'Payment initiation failed')
+    
+    // If we found a successful response, return it
+    if (successfulResponse) {
+      return successfulResponse
+    }
+    
+    // If all endpoints failed, throw the last error
+    console.error('❌ All BulkClix endpoints failed. Last error:', lastError)
+    throw lastError || new Error('Payment initiation failed: All endpoints returned errors')
   } catch (error: any) {
     console.error('BulkClix payment initiation error:', error)
     return {

@@ -273,28 +273,28 @@ export async function sendNotification(
   }
 ): Promise<void> {
   try {
-    // Check if user wants to receive this notification
-    const shouldSend = await shouldSendNotification(userId, type)
-    if (!shouldSend) {
-      console.log(`Notification skipped for user ${userId}: ${type} (preferences disabled)`)
-      return
-    }
-
+    // ALWAYS create in-app notification regardless of email preferences
+    // Email is optional, but in-app notifications should always be shown
+    
+    // Check if user wants to receive EMAIL notifications
+    const shouldSendEmail = await shouldSendNotification(userId, type)
+    
     // Get user email
     const userEmail = await getUserEmail(userId)
 
-    // Get email template
-    const template = getEmailTemplate(type, data)
-
-    // Send email
+    // Send email only if user has email notifications enabled
     let emailSent = false
-    if (userEmail) {
-      emailSent = await sendEmail(userEmail, template)
-    } else {
-      console.warn(`No email found for user ${userId}. Creating in-app notification without email.`)
+    if (shouldSendEmail && userEmail) {
+      try {
+        const template = getEmailTemplate(type, data)
+        emailSent = await sendEmail(userEmail, template)
+      } catch (error) {
+        console.error('Failed to send email notification:', error)
+        // Continue to create in-app notification even if email fails
+      }
     }
 
-    // Create notification record
+    // ALWAYS create notification record in database (in-app notification)
     const { error } = await supabase
       .from('notifications')
       .insert({
@@ -306,14 +306,37 @@ export async function sendNotification(
         message: data.message,
         email_sent: emailSent,
         email_sent_at: emailSent ? new Date().toISOString() : null,
-        metadata: data,
+        metadata: {
+          ...data,
+          // Ensure electionUrl is in metadata for navigation
+          electionUrl: data.electionUrl || (data.electionId ? `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/dashboard/votes/${data.electionId}` : undefined),
+        },
       })
 
     if (error) {
       console.error('Error creating notification record:', error)
+    } else {
+      console.log(`✅ In-app notification created for user ${userId}: ${type} - ${data.title}`)
     }
   } catch (error) {
     console.error('Error sending notification:', error)
+    // Even if there's an error, try to create the notification record
+    try {
+      await supabase
+        .from('notifications')
+        .insert({
+          user_id: userId,
+          election_id: data.electionId,
+          invoice_id: data.invoiceId,
+          type,
+          title: data.title,
+          message: data.message,
+          email_sent: false,
+          metadata: data,
+        })
+    } catch (fallbackError) {
+      console.error('Failed to create notification record as fallback:', fallbackError)
+    }
   }
 }
 
@@ -367,7 +390,7 @@ export async function sendPaymentAlert(
 }
 
 /**
- * Send vote update
+ * Send vote update notification when a vote is cast
  */
 export async function sendVoteUpdate(
   userId: string,
@@ -378,10 +401,19 @@ export async function sendVoteUpdate(
 ): Promise<void> {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
   
+  // Create a more descriptive title and message
+  const title = voteCount && voteCount > 1 
+    ? `🎉 ${voteCount} New Votes Cast`
+    : '🗳️ New Vote Cast'
+  
+  const enhancedMessage = voteCount && voteCount > 1
+    ? `${voteCount} new votes have been cast in "${electionName}". Total votes: ${voteCount}.`
+    : `A new vote has been cast in "${electionName}". Total votes: ${voteCount || 'updated'}.`
+  
   await sendNotification(userId, 'vote_update', {
     electionId,
-    title: 'Vote Update',
-    message,
+    title,
+    message: enhancedMessage,
     electionName,
     voteCount,
     electionUrl: `${baseUrl}/dashboard/votes/${electionId}`,

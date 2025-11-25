@@ -601,7 +601,7 @@ export const db = {
       })
       .eq('id', voterId)
 
-    // Send vote update notification
+    // Send vote update notification to election owner
     try {
       const { data: election } = await supabase
         .from('elections')
@@ -611,11 +611,13 @@ export const db = {
 
       if (election) {
         const { sendVoteUpdate } = await import('./email')
+        // Get current total vote count
         const { data: { count } } = await supabase
           .from('votes')
           .select('*', { count: 'exact', head: true })
           .eq('election_id', electionId)
 
+        // Send notification with updated vote count
         await sendVoteUpdate(
           election.user_id,
           electionId,
@@ -827,19 +829,25 @@ export const db = {
       }
     }
 
-    // Send vote update notification
+    // Send vote update notification to election owner
     try {
       const { sendVoteUpdate } = await import('./email')
+      // Get current total vote count after all votes are submitted
       const { data: { count } } = await supabase
         .from('votes')
         .select('*', { count: 'exact', head: true })
         .eq('election_id', electionId)
 
+      // Create descriptive message
+      const message = voteCount > 1
+        ? `${voteCount} new votes have been cast in your public contest "${election.name}".`
+        : `A new vote has been cast in your public contest "${election.name}".`
+
       await sendVoteUpdate(
         election.user_id,
         electionId,
         election.name,
-        `${voteCount} new vote${voteCount > 1 ? 's' : ''} ${voteCount > 1 ? 'have' : 'has'} been cast in your public contest "${election.name}".`,
+        message,
         count || 0
       )
     } catch (error) {
