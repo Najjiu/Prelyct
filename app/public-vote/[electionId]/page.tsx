@@ -176,25 +176,60 @@ export default function PublicVotePage() {
       })
 
       if (!paymentResponse.ok) {
-        const errorData = await paymentResponse.json().catch(() => ({ message: 'Failed to initiate payment' }))
-        const errorMessage = errorData.message || 'Failed to initiate payment'
-        
-        // Provide helpful message for account configuration issues
-        if (errorMessage.toLowerCase().includes('not allowed') || errorMessage.toLowerCase().includes('momo collection')) {
-          throw new Error('Payment service is not configured. Please contact support to enable mobile money payments.')
+        const errorText = await paymentResponse.text()
+        let errorData: any = {}
+        try {
+          errorData = JSON.parse(errorText)
+        } catch {
+          errorData = { message: errorText || 'Failed to initiate payment' }
         }
         
-        throw new Error(errorMessage)
+        const errorMessage = errorData.message || errorData.error || errorData.msg || 'Failed to initiate payment'
+        
+        console.error('❌ Payment API Error:', {
+          status: paymentResponse.status,
+          statusText: paymentResponse.statusText,
+          errorData,
+          errorMessage,
+        })
+        
+        // Provide helpful message for common issues
+        if (errorMessage.toLowerCase().includes('not allowed') || 
+            errorMessage.toLowerCase().includes('momo collection') ||
+            errorMessage.toLowerCase().includes('ip address') ||
+            errorMessage.toLowerCase().includes('not whitelisted') ||
+            errorMessage.toLowerCase().includes('access denied')) {
+          throw new Error(`BulkClix Error: ${errorMessage}. Please ensure your server IP is whitelisted and mobile money collection is enabled in your BulkClix dashboard.`)
+        }
+        
+        throw new Error(`Payment Error: ${errorMessage}`)
       }
 
-      const paymentData = await paymentResponse.json()
+      const responseText = await paymentResponse.text()
+      let paymentData: any = {}
+      try {
+        paymentData = JSON.parse(responseText)
+      } catch {
+        throw new Error(`Invalid response from payment API: ${responseText.substring(0, 200)}`)
+      }
+
+      console.log('📥 Payment Response:', paymentData)
 
       if (!paymentData.success || !paymentData.transaction_id) {
-        const errorMessage = paymentData.message || 'Failed to initiate payment'
+        const errorMessage = paymentData.message || paymentData.error || 'Failed to initiate payment'
         
-        // Provide helpful message for account configuration issues
-        if (errorMessage.toLowerCase().includes('not allowed') || errorMessage.toLowerCase().includes('momo collection')) {
-          throw new Error('Payment service is not configured. Please contact support to enable mobile money payments.')
+        console.error('❌ Payment Failed:', {
+          paymentData,
+          errorMessage,
+        })
+        
+        // Provide helpful message for common issues
+        if (errorMessage.toLowerCase().includes('not allowed') || 
+            errorMessage.toLowerCase().includes('momo collection') ||
+            errorMessage.toLowerCase().includes('ip address') ||
+            errorMessage.toLowerCase().includes('not whitelisted') ||
+            errorMessage.toLowerCase().includes('access denied')) {
+          throw new Error(`BulkClix Error: ${errorMessage}. Please check your BulkClix dashboard settings.`)
         }
         
         throw new Error(errorMessage)
