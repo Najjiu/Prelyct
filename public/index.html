@@ -126,6 +126,34 @@
         background: linear-gradient(135deg, #f8fafc 0%, #ffffff 50%, #eff6ff 100%);
         background-attachment: fixed;
       }
+      
+      /* Mobile Optimization */
+      @media (max-width: 640px) {
+        /* Ensure buttons are touch-friendly */
+        a[class*="rounded-full"],
+        button[class*="rounded-full"] {
+          min-height: 48px;
+          min-width: 48px;
+        }
+        
+        /* Improve text readability on mobile */
+        p {
+          font-size: 16px;
+          line-height: 1.6;
+        }
+        
+        /* Optimize images for mobile */
+        img {
+          max-width: 100%;
+          height: auto;
+        }
+        
+        /* Ensure proper spacing on mobile */
+        section {
+          padding-top: 3rem;
+          padding-bottom: 3rem;
+        }
+      }
     </style>
   </head>
   <body class="font-sans text-slate-800 antialiased">
@@ -285,28 +313,26 @@
               Built in Ghana · For African Institutions
             </div>
             <h1 class="font-display text-4xl font-bold tracking-tight text-midnight md:text-5xl lg:text-6xl">
-              All-in-One Partner for
-              <span class="block bg-gradient-to-r from-accent via-purple-600 to-pink-500 bg-clip-text text-transparent animate-gradient">
-                Digital Transformation
-              </span>
-              and
-              <span class="block bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 bg-clip-text text-transparent">
-                Brand Excellence
-              </span>
+              Digital Solutions for Institutions, Businesses &amp; Students in Ghana
             </h1>
-            <p class="text-lg text-slate-600">
-              We create digital experiences that drive results. From secure voting systems to comprehensive web applications, we empower businesses across Ghana and West Africa with cutting-edge technology solutions.
+            <p class="text-lg leading-relaxed text-slate-600">
+              Prelyct provides secure online voting, student hostel solutions, and professional digital services to help you work smarter and grow faster.
             </p>
-            <div class="flex flex-wrap items-center gap-3">
+            <div class="flex flex-wrap items-center gap-4">
               <a
-                href="#products"
-                class="rounded-full bg-accent px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-accent/30 transition hover:bg-accent-soft"
-                >Explore Products</a
+                href="/soleva-votes"
+                class="rounded-full bg-accent px-8 py-4 text-base font-semibold text-white shadow-xl shadow-accent/30 transition hover:bg-accent-soft hover:shadow-2xl hover:scale-105"
+                >Launch a Vote</a
               >
               <a
                 href="/contact"
-                class="rounded-full border border-slate-300 px-6 py-3 text-sm font-semibold text-slate-700 transition hover:border-accent hover:text-accent"
-                >Contact Us</a
+                class="rounded-full border-2 border-slate-300 px-8 py-4 text-base font-semibold text-slate-700 transition hover:border-accent hover:text-accent hover:shadow-lg"
+                >Hire Us for Your Project</a
+              >
+              <a
+                href="/soleva-hostels"
+                class="rounded-full border-2 border-accent/30 bg-accent/5 px-8 py-4 text-base font-semibold text-accent transition hover:bg-accent/10 hover:shadow-lg"
+                >Submit Your Hostel</a
               >
             </div>
             <div class="flex items-center gap-6">
@@ -368,161 +394,355 @@
         </div>
       </section>
 
-      <!-- Why Prelyct -->
-      <section class="border-t border-slate-200 bg-slate-50 py-16">
-        <div class="mx-auto grid max-w-6xl gap-12 px-6 md:grid-cols-2 md:items-center">
-          <div class="space-y-4">
-            <p class="text-sm font-semibold uppercase tracking-[0.3em] text-accent">Why Prelyct exists</p>
-            <h2 class="text-3xl font-bold text-midnight">Built to earn trust for African institutions</h2>
-            <p class="text-slate-600">
-              Prelyct was born on campus grounds in Ghana. We exist to help student unions, NGOs, and growing businesses operate with confidence by pairing dependable software with storytelling that resonates locally.
+      <!-- Brand Story -->
+      <section class="border-t border-slate-200 bg-gradient-to-br from-slate-50 via-white to-accent/5 py-20">
+        <div class="mx-auto max-w-4xl px-6 text-center">
+          <p class="text-sm font-semibold uppercase tracking-[0.3em] text-accent">Our Story</p>
+          <h2 class="mt-4 font-display text-4xl font-bold text-midnight md:text-5xl">Prelyct is a Ghana-based digital solutions studio</h2>
+          <p class="mt-6 text-lg leading-relaxed text-slate-600 md:text-xl">
+            We provide solutions to customers and clients who believe technology should be simple, affordable, and powerful for everyone.
+          </p>
+          <div class="mt-10 flex flex-wrap items-center justify-center gap-4">
+            <div class="rounded-2xl border border-slate-200 bg-white px-6 py-4 shadow-sm">
+              <p class="text-2xl font-bold text-midnight">🇬🇭</p>
+              <p class="mt-2 text-sm font-semibold text-slate-700">Made in Ghana</p>
+            </div>
+            <div class="rounded-2xl border border-slate-200 bg-white px-6 py-4 shadow-sm">
+              <p class="text-2xl font-bold text-midnight">🌍</p>
+              <p class="mt-2 text-sm font-semibold text-slate-700">For Africa</p>
+            </div>
+            <div class="rounded-2xl border border-slate-200 bg-white px-6 py-4 shadow-sm">
+              <p class="text-2xl font-bold text-midnight">💡</p>
+              <p class="mt-2 text-sm font-semibold text-slate-700">Simple & Powerful</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3 Pillars: Products -->
+      <section id="products" class="border-t border-slate-200 bg-white py-20">
+        <div class="mx-auto max-w-6xl px-6">
+          <div class="mb-12 text-center">
+            <p class="text-sm font-semibold uppercase tracking-[0.3em] text-accent">Three Pillars</p>
+            <h2 class="mt-3 font-display text-4xl font-bold text-midnight md:text-5xl">Our Core Solutions</h2>
+            <p class="mt-4 mx-auto max-w-2xl text-lg text-slate-600">
+              Three powerful platforms designed to solve real challenges for institutions, businesses, and students across Ghana.
             </p>
           </div>
-          <div>
-            <div class="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
-              <ul class="space-y-4 text-sm text-slate-600">
-                <li>
-                  <span class="font-semibold text-midnight">Reliability first.</span>
-                  Every launch is backed by rigorous testing, security reviews, and on-call support.
-                </li>
-                <li>
-                  <span class="font-semibold text-midnight">Co-created with stakeholders.</span>
-                  We work alongside SRCs, administrators, and founders to shape each workflow.
-                </li>
-                <li>
-                  <span class="font-semibold text-midnight">Designed for our context.</span>
-                  Local insights, languages, and distribution channels keep experiences inclusive.
-                </li>
-              </ul>
+          
+          <!-- Pillar A: Prelyct Votes -->
+          <article class="mb-12 rounded-3xl border-2 border-slate-200 bg-gradient-to-br from-white to-accent/5 p-8 shadow-xl transition hover:shadow-2xl md:p-12">
+            <div class="grid gap-8 md:grid-cols-2 md:items-center">
+              <div>
+                <div class="inline-flex items-center gap-3 rounded-full bg-accent/10 px-4 py-2">
+                  <svg class="h-6 w-6 text-accent" viewBox="0 0 24 24" fill="none">
+                    <path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                  </svg>
+                  <span class="text-sm font-semibold text-accent">Pillar A</span>
+                </div>
+                <h3 class="mt-6 font-display text-3xl font-bold text-midnight md:text-4xl">Prelyct Votes</h3>
+                <p class="mt-4 text-lg text-slate-600">
+                  Online election system for universities, SRC/departmental votes, beauty pageants, talent shows, and membership clubs.
+                </p>
+                <div class="mt-6 grid gap-4 sm:grid-cols-2">
+                  <div class="flex items-start gap-3">
+                    <svg class="h-5 w-5 shrink-0 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span class="text-sm text-slate-600">Live results dashboard</span>
+                  </div>
+                  <div class="flex items-start gap-3">
+                    <svg class="h-5 w-5 shrink-0 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span class="text-sm text-slate-600">Secure authentication</span>
+                  </div>
+                  <div class="flex items-start gap-3">
+                    <svg class="h-5 w-5 shrink-0 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span class="text-sm text-slate-600">Payment-per-vote option</span>
+                  </div>
+                  <div class="flex items-start gap-3">
+                    <svg class="h-5 w-5 shrink-0 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span class="text-sm text-slate-600">Unlimited voters</span>
+                  </div>
+                </div>
+                <div class="mt-8">
+                  <a href="/soleva-votes" class="inline-flex items-center rounded-full bg-accent px-6 py-3 text-base font-semibold text-white shadow-lg shadow-accent/30 transition hover:bg-accent-soft hover:shadow-xl">
+                    Launch a Vote
+                    <svg class="ml-2 h-4 w-4" viewBox="0 0 12 12" fill="none">
+                      <path d="M4 3l4 3-4 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </a>
+                </div>
+              </div>
+              <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-lg">
+                <img src="images/votes.png" alt="Prelyct Votes dashboard" class="h-full w-full object-cover" />
+              </div>
             </div>
-          </div>
+          </article>
+
+          <!-- Pillar B: Prelyct Hostels -->
+          <article class="mb-12 rounded-3xl border-2 border-slate-200 bg-gradient-to-br from-white to-accent-green/5 p-8 shadow-xl transition hover:shadow-2xl md:p-12">
+            <div class="grid gap-8 md:grid-cols-2 md:items-center">
+              <div class="order-2 md:order-1 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-lg">
+                <img src="images/hostels.png" alt="Prelyct Hostels platform" class="h-full w-full object-cover" />
+              </div>
+              <div class="order-1 md:order-2">
+                <div class="inline-flex items-center gap-3 rounded-full bg-accent-green/10 px-4 py-2">
+                  <svg class="h-6 w-6 text-accent-green" viewBox="0 0 24 24" fill="none">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" stroke="currentColor" stroke-width="2"/>
+                    <polyline points="9 22 9 12 15 12 15 22" stroke="currentColor" stroke-width="2"/>
+                  </svg>
+                  <span class="text-sm font-semibold text-accent-green">Pillar B</span>
+                </div>
+                <h3 class="mt-6 font-display text-3xl font-bold text-midnight md:text-4xl">Prelyct Hostels</h3>
+                <p class="mt-4 text-lg text-slate-600">
+                  Platform for verified student hostels, bookings, digital payments, maps & room availability, and landlord dashboards.
+                </p>
+                <div class="mt-6 grid gap-4">
+                  <div class="flex items-start gap-3">
+                    <svg class="h-5 w-5 shrink-0 text-accent-green" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span class="text-sm text-slate-600">Verified student hostels with safety checks</span>
+                  </div>
+                  <div class="flex items-start gap-3">
+                    <svg class="h-5 w-5 shrink-0 text-accent-green" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span class="text-sm text-slate-600">Secure digital payments & escrow</span>
+                  </div>
+                  <div class="flex items-start gap-3">
+                    <svg class="h-5 w-5 shrink-0 text-accent-green" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span class="text-sm text-slate-600">Maps, room availability, & booking system</span>
+                  </div>
+                  <div class="flex items-start gap-3">
+                    <svg class="h-5 w-5 shrink-0 text-accent-green" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span class="text-sm text-slate-600">Landlord dashboard for property management</span>
+                  </div>
+                </div>
+                <div class="mt-8">
+                  <a href="/soleva-hostels" class="inline-flex items-center rounded-full bg-accent-green px-6 py-3 text-base font-semibold text-white shadow-lg shadow-accent-green/30 transition hover:bg-accent-green/90 hover:shadow-xl">
+                    Submit Your Hostel
+                    <svg class="ml-2 h-4 w-4" viewBox="0 0 12 12" fill="none">
+                      <path d="M4 3l4 3-4 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- Pillar C: Digital Services -->
+          <article class="rounded-3xl border-2 border-slate-200 bg-gradient-to-br from-white to-accent-amber/5 p-8 shadow-xl transition hover:shadow-2xl md:p-12">
+            <div class="grid gap-8 md:grid-cols-2 md:items-center">
+              <div>
+                <div class="inline-flex items-center gap-3 rounded-full bg-accent-amber/10 px-4 py-2">
+                  <svg class="h-6 w-6 text-accent-amber" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 2L2 7l10 5 10-5-10-5z" stroke="currentColor" stroke-width="2"/>
+                    <path d="M2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" stroke-width="2"/>
+                  </svg>
+                  <span class="text-sm font-semibold text-accent-amber">Pillar C</span>
+                </div>
+                <h3 class="mt-6 font-display text-3xl font-bold text-midnight md:text-4xl">Prelyct Digital Services</h3>
+                <p class="mt-4 text-lg text-slate-600">
+                  Your daily income section. Professional services for graphic design, Microsoft Office, website development, and social media branding.
+                </p>
+                <div class="mt-6 grid gap-4">
+                  <div class="flex items-start gap-3">
+                    <svg class="h-5 w-5 shrink-0 text-accent-amber" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span class="text-sm text-slate-600"><strong>Graphic Design:</strong> Logos, flyers, banners, posters, brand identities</span>
+                  </div>
+                  <div class="flex items-start gap-3">
+                    <svg class="h-5 w-5 shrink-0 text-accent-amber" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span class="text-sm text-slate-600"><strong>Microsoft Office Services:</strong> Word, Excel, PowerPoint formatting & design</span>
+                  </div>
+                  <div class="flex items-start gap-3">
+                    <svg class="h-5 w-5 shrink-0 text-accent-amber" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span class="text-sm text-slate-600"><strong>Website Development:</strong> Custom web & mobile applications</span>
+                  </div>
+                  <div class="flex items-start gap-3">
+                    <svg class="h-5 w-5 shrink-0 text-accent-amber" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span class="text-sm text-slate-600"><strong>Social Media Branding:</strong> Content kits, campaigns, visual identity</span>
+                  </div>
+                </div>
+                <div class="mt-8 flex flex-wrap gap-3">
+                  <a href="/web-development" class="inline-flex items-center rounded-full border-2 border-accent-amber px-6 py-3 text-base font-semibold text-accent-amber transition hover:bg-accent-amber/10">
+                    Web Development
+                  </a>
+                  <a href="/graphic-design" class="inline-flex items-center rounded-full border-2 border-accent-amber px-6 py-3 text-base font-semibold text-accent-amber transition hover:bg-accent-amber/10">
+                    Creative Studio
+                  </a>
+                  <a href="/ms-suite-services" class="inline-flex items-center rounded-full border-2 border-accent-amber px-6 py-3 text-base font-semibold text-accent-amber transition hover:bg-accent-amber/10">
+                    MS Office Studio
+                  </a>
+                </div>
+              </div>
+              <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-lg">
+                <img src="images/web-development.jpg" alt="Prelyct Digital Services" class="h-full w-full object-cover" />
+              </div>
+            </div>
+          </article>
         </div>
       </section>
 
-      <!-- Products -->
-      <section id="products" class="border-t border-slate-200 bg-slate-50 py-16">
+      <!-- Visual Showcases -->
+      <section class="border-t border-slate-200 bg-gradient-to-b from-white to-slate-50 py-20">
         <div class="mx-auto max-w-6xl px-6">
-          <div class="mb-10 flex items-start justify-between gap-6">
-            <div>
-              <p class="text-sm font-semibold uppercase tracking-[0.3em] text-accent">Solutions</p>
-              <h2 class="mt-3 text-3xl font-bold text-midnight">Built for Modern Ghana campuses</h2>
-              <p class="mt-2 max-w-2xl text-slate-600">
-                Each Prelyct platform solves a real institutional challenge—from transparent elections to reliable student housing management.
-              </p>
+          <div class="mb-12 text-center">
+            <p class="text-sm font-semibold uppercase tracking-[0.3em] text-accent">Solutions in Action</p>
+            <h2 class="mt-3 font-display text-4xl font-bold text-midnight md:text-5xl">See What We Build</h2>
+            <p class="mt-4 mx-auto max-w-2xl text-lg text-slate-600">
+              Real solutions powering institutions, businesses, and student communities across Ghana.
+            </p>
+          </div>
+          
+          <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+            <!-- Showcase 1: Voting System -->
+            <div class="group overflow-hidden rounded-3xl border-2 border-slate-200 bg-white shadow-xl transition-all hover:-translate-y-2 hover:shadow-2xl">
+              <div class="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-accent/20 to-accent/5">
+                <img src="images/votes.png" alt="Secure voting system" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                <div class="absolute bottom-0 left-0 right-0 p-6 text-white">
+                  <span class="inline-block rounded-full bg-white/20 px-3 py-1 text-xs font-semibold backdrop-blur-sm">Prelyct Votes</span>
+                  <h3 class="mt-3 text-xl font-bold">Secure Election Platform</h3>
+                </div>
+              </div>
+              <div class="p-6">
+                <p class="text-sm text-slate-600">Real-time dashboards, verified authentication, and transparent results for university elections and contests.</p>
+                <a href="/soleva-votes" class="mt-4 inline-flex items-center text-sm font-semibold text-accent hover:text-accent-soft">
+                  Learn more
+                  <svg class="ml-2 h-4 w-4" viewBox="0 0 12 12" fill="none">
+                    <path d="M4 3l4 3-4 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </a>
+              </div>
             </div>
-            <a
-              href="/soleva-votes"
-              class="hidden rounded-full border border-slate-300 px-5 py-2 text-sm font-semibold text-slate-700 transition hover:border-accent hover:text-accent sm:inline-flex"
-              >View products</a
-            >
-          </div>
-          <div class="grid gap-6 md:grid-cols-2">
-            <article class="rounded-3xl border border-slate-200 bg-white p-8 shadow-lg shadow-slate-900/5">
-              <div class="flex items-center gap-3">
-                <span class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-accent/10 text-accent">
-                  <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none">
-                    <path d="M5 12l4 4L19 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                </span>
-                <h3 class="text-xl font-semibold text-midnight">Prelyct Votes</h3>
-              </div>
-              <p class="mt-4 text-slate-600">
-                Secure voting experiences across web and USSD with real-time dashboards, verified voter IDs, and exportable results.
-              </p>
-              <ul class="mt-4 space-y-2 text-sm text-slate-600">
-                <li>• Web, USSD, and kiosk channels</li>
-                <li>• Real-time turnout analytics</li>
-                <li>• Secure voter onboarding</li>
-              </ul>
-              <a href="/soleva-votes" class="mt-6 inline-flex items-center text-sm font-semibold text-accent hover:text-accent-soft">
-                Learn more
-                <svg class="ml-2 h-3 w-3" viewBox="0 0 12 12" fill="none">
-                  <path d="M4 3l4 3-4 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </a>
-            </article>
-            <article class="rounded-3xl border border-slate-200 bg-white p-8 shadow-lg shadow-slate-900/5">
-              <div class="flex items-center gap-3">
-                <span class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-accent/10 text-accent">
-                  <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none">
-                    <path d="M5 5h14v14H5z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
-                    <path d="M9 5V3h6v2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                  </svg>
-                </span>
-                <h3 class="text-xl font-semibold text-midnight">Prelyct Hostels <span class="ml-2 rounded-full bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-600">Coming Soon</span></h3>
-              </div>
-              <p class="mt-4 text-slate-600">
-                Student housing marketplace with verified listings, escrow payments, and owner dashboards tailored for campus life.
-              </p>
-              <ul class="mt-4 space-y-2 text-sm text-slate-600">
-                <li>• Verified tenant &amp; landlord profiles</li>
-                <li>• Escrow payments &amp; dispute resolution</li>
-                <li>• Property management tools</li>
-              </ul>
-              <a href="/soleva-hostels" class="mt-6 inline-flex items-center text-sm font-semibold text-accent hover:text-accent-soft">
-                Join waitlist
-                <svg class="ml-2 h-3 w-3" viewBox="0 0 12 12" fill="none">
-                  <path d="M4 3l4 3-4 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </a>
-            </article>
-          </div>
-        </div>
-      </section>
 
-      <!-- Services -->
-      <section class="py-16">
-        <div class="mx-auto max-w-6xl px-6">
-          <div class="mb-10 flex items-center justify-between">
-            <div>
-              <p class="text-sm font-semibold uppercase tracking-[0.3em] text-accent">Services</p>
-              <h2 class="mt-3 text-3xl font-bold text-midnight">Built by programmers, designers &amp; storytellers</h2>
-              <p class="mt-2 max-w-3xl text-slate-600">
-                Beyond our flagship products we help teams launch custom software, visual identities, and investor-ready pitch decks.
-              </p>
-            </div>
-            <a
-              href="/web-development"
-              class="hidden rounded-full border border-slate-300 px-5 py-2 text-sm font-semibold text-slate-700 transition hover:border-accent hover:text-accent md:inline-flex"
-              >See our services</a
-            >
-          </div>
-          <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-            <div class="group rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
-              <div class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-accent/10 text-accent">
-                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h16M4 18h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            <!-- Showcase 2: Hostels -->
+            <div class="group overflow-hidden rounded-3xl border-2 border-slate-200 bg-white shadow-xl transition-all hover:-translate-y-2 hover:shadow-2xl">
+              <div class="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-accent-green/20 to-accent-green/5">
+                <img src="images/hostels.png" alt="Student hostel marketplace" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                <div class="absolute bottom-0 left-0 right-0 p-6 text-white">
+                  <span class="inline-block rounded-full bg-white/20 px-3 py-1 text-xs font-semibold backdrop-blur-sm">Prelyct Hostels</span>
+                  <h3 class="mt-3 text-xl font-bold">Verified Student Housing</h3>
+                </div>
               </div>
-              <h3 class="mt-5 text-lg font-semibold text-midnight">Web &amp; Mobile Development</h3>
-              <p class="mt-3 text-sm text-slate-600">
-                High-performance portals, SaaS platforms, and mobile apps built with Next.js, React, Supabase, and Flutter.
-              </p>
-            </div>
-            <div class="group rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
-              <div class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-accent/10 text-accent">
-                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none"><path d="M4 20l16-16M4 4h16v16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <div class="p-6">
+                <p class="text-sm text-slate-600">Safe, verified hostels with secure payments, maps, and availability tracking for students.</p>
+                <a href="/soleva-hostels" class="mt-4 inline-flex items-center text-sm font-semibold text-accent-green hover:text-accent-green/80">
+                  Join waitlist
+                  <svg class="ml-2 h-4 w-4" viewBox="0 0 12 12" fill="none">
+                    <path d="M4 3l4 3-4 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </a>
               </div>
-              <h3 class="mt-5 text-lg font-semibold text-midnight">Voting System Dashboards</h3>
-              <p class="mt-3 text-sm text-slate-600">
-                Secure admin dashboards and voting layers powered by Supabase, and REST.
-              </p>
             </div>
-            <div class="group rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
-              <div class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-accent/10 text-accent">
-                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none"><path d="M12 3v18M3 12h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+
+            <!-- Showcase 3: Web Development -->
+            <div class="group overflow-hidden rounded-3xl border-2 border-slate-200 bg-white shadow-xl transition-all hover:-translate-y-2 hover:shadow-2xl">
+              <div class="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-accent-amber/20 to-accent-amber/5">
+                <img src="images/web-development.jpg" alt="Web and app development" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                <div class="absolute bottom-0 left-0 right-0 p-6 text-white">
+                  <span class="inline-block rounded-full bg-white/20 px-3 py-1 text-xs font-semibold backdrop-blur-sm">Digital Services</span>
+                  <h3 class="mt-3 text-xl font-bold">Custom Web & Apps</h3>
+                </div>
               </div>
-              <h3 class="mt-5 text-lg font-semibold text-midnight">Creative Studio</h3>
-              <p class="mt-3 text-sm text-slate-600">
-                Brand identity systems, social media kits, and campaign visuals tailored for West African audiences.
-              </p>
+              <div class="p-6">
+                <p class="text-sm text-slate-600">High-performance websites, mobile apps, and SaaS platforms built with modern technologies.</p>
+                <a href="/web-development" class="mt-4 inline-flex items-center text-sm font-semibold text-accent-amber hover:text-accent-amber/80">
+                  View services
+                  <svg class="ml-2 h-4 w-4" viewBox="0 0 12 12" fill="none">
+                    <path d="M4 3l4 3-4 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </a>
+              </div>
             </div>
-            <div class="group rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
-              <div class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-accent/10 text-accent">
-                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none"><path d="M6 4h12v16H6z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M10 8h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+
+            <!-- Showcase 4: Graphic Design -->
+            <div class="group overflow-hidden rounded-3xl border-2 border-slate-200 bg-white shadow-xl transition-all hover:-translate-y-2 hover:shadow-2xl">
+              <div class="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-pink-500/20 to-purple-500/20">
+                <img src="images/graphic-design.jpg" alt="Creative design services" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                <div class="absolute bottom-0 left-0 right-0 p-6 text-white">
+                  <span class="inline-block rounded-full bg-white/20 px-3 py-1 text-xs font-semibold backdrop-blur-sm">Creative Studio</span>
+                  <h3 class="mt-3 text-xl font-bold">Brand & Visual Identity</h3>
+                </div>
               </div>
-              <h3 class="mt-5 text-lg font-semibold text-midnight">Presentation &amp; Brand Kits</h3>
-              <p class="mt-3 text-sm text-slate-600">
-                Investor decks, annual reports, and executive communications with motion-ready storytelling.
-              </p>
+              <div class="p-6">
+                <p class="text-sm text-slate-600">Stunning logos, flyers, banners, posters, and social media kits designed for African audiences.</p>
+                <a href="/graphic-design" class="mt-4 inline-flex items-center text-sm font-semibold text-accent hover:text-accent-soft">
+                  View portfolio
+                  <svg class="ml-2 h-4 w-4" viewBox="0 0 12 12" fill="none">
+                    <path d="M4 3l4 3-4 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </a>
+              </div>
+            </div>
+
+            <!-- Showcase 5: MS Suite -->
+            <div class="group overflow-hidden rounded-3xl border-2 border-slate-200 bg-white shadow-xl transition-all hover:-translate-y-2 hover:shadow-2xl">
+              <div class="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-blue-500/20 to-indigo-500/20">
+                <img src="images/ms-suite-hero.png" alt="Microsoft Office services" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                <div class="absolute bottom-0 left-0 right-0 p-6 text-white">
+                  <span class="inline-block rounded-full bg-white/20 px-3 py-1 text-xs font-semibold backdrop-blur-sm">MS Office Studio</span>
+                  <h3 class="mt-3 text-xl font-bold">Document Formatting</h3>
+                </div>
+              </div>
+              <div class="p-6">
+                <p class="text-sm text-slate-600">Professional Word, Excel, and PowerPoint formatting for students and professionals.</p>
+                <a href="/ms-suite-services" class="mt-4 inline-flex items-center text-sm font-semibold text-accent hover:text-accent-soft">
+                  Get help
+                  <svg class="ml-2 h-4 w-4" viewBox="0 0 12 12" fill="none">
+                    <path d="M4 3l4 3-4 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </a>
+              </div>
+            </div>
+
+            <!-- Showcase 6: Support -->
+            <div class="group overflow-hidden rounded-3xl border-2 border-accent bg-gradient-to-br from-accent/10 to-accent/5 shadow-xl transition-all hover:-translate-y-2 hover:shadow-2xl">
+              <div class="relative aspect-[4/3] flex items-center justify-center overflow-hidden">
+                <div class="absolute inset-0 bg-gradient-to-br from-accent/20 to-purple-500/20"></div>
+                <div class="relative z-10 p-8 text-center">
+                  <div class="mx-auto mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full bg-accent text-white">
+                    <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                  </div>
+                  <h3 class="text-2xl font-bold text-midnight">24/7 Support</h3>
+                  <p class="mt-2 text-sm text-slate-600">We're here when you need us</p>
+                </div>
+              </div>
+              <div class="p-6">
+                <p class="text-sm text-slate-600">Round-the-clock support for all our platforms and services. Get help when you need it.</p>
+                <a href="/contact" class="mt-4 inline-flex items-center text-sm font-semibold text-accent hover:text-accent-soft">
+                  Contact support
+                  <svg class="ml-2 h-4 w-4" viewBox="0 0 12 12" fill="none">
+                    <path d="M4 3l4 3-4 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </a>
+              </div>
             </div>
           </div>
         </div>
@@ -609,27 +829,32 @@
       </section>
 
       <!-- Contact CTA -->
-      <section class="border-t border-slate-200 bg-slate-50 py-16">
-        <div class="mx-auto max-w-5xl rounded-4xl border border-slate-200 bg-white px-8 py-12 shadow-xl">
-          <div class="flex flex-col items-start gap-6 lg:flex-row lg:items-center lg:justify-between">
-            <div>
-              <p class="text-sm font-semibold uppercase tracking-[0.3em] text-accent">Let’s build</p>
-              <h2 class="mt-3 text-3xl font-bold text-midnight">Ready to launch your next project?</h2>
-              <p class="mt-2 text-slate-600">
-                Share your goals and we’ll assemble the right product, engineering, and creative team.
+      <section class="border-t border-slate-200 bg-gradient-to-br from-accent/5 via-white to-accent-amber/5 py-20">
+        <div class="mx-auto max-w-5xl px-6">
+          <div class="rounded-4xl border-2 border-accent/20 bg-gradient-to-br from-white to-accent/5 px-8 py-16 shadow-2xl">
+            <div class="text-center">
+              <p class="text-sm font-semibold uppercase tracking-[0.3em] text-accent">Ready to Get Started?</p>
+              <h2 class="mt-4 font-display text-4xl font-bold text-midnight md:text-5xl">Let's Build Something Great Together</h2>
+              <p class="mt-6 mx-auto max-w-2xl text-lg text-slate-600">
+                Share your goals and we'll assemble the right product, engineering, and creative team to bring your vision to life.
               </p>
-            </div>
-            <div class="flex flex-wrap gap-3">
-              <a
-                href="/contact"
-                class="rounded-full bg-accent px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-accent/30 transition hover:bg-accent-soft"
-                >Contact us</a
-              >
-              <a
-                href="/auth/sign-in"
-                class="rounded-full border border-slate-300 px-6 py-3 text-sm font-semibold text-slate-700 transition hover:border-accent hover:text-accent"
-                >Sign in to dashboard</a
-              >
+              <div class="mt-10 flex flex-wrap items-center justify-center gap-4">
+                <a
+                  href="/contact"
+                  class="rounded-full bg-accent px-8 py-4 text-base font-semibold text-white shadow-xl shadow-accent/30 transition hover:bg-accent-soft hover:shadow-2xl hover:scale-105"
+                  >Hire Us for Your Project</a
+                >
+                <a
+                  href="/soleva-votes"
+                  class="rounded-full border-2 border-accent px-8 py-4 text-base font-semibold text-accent transition hover:bg-accent/10 hover:shadow-lg"
+                  >Launch a Vote</a
+                >
+                <a
+                  href="/soleva-hostels"
+                  class="rounded-full border-2 border-slate-300 bg-white px-8 py-4 text-base font-semibold text-slate-700 transition hover:border-accent hover:text-accent hover:shadow-lg"
+                  >Submit Your Hostel</a
+                >
+              </div>
             </div>
           </div>
         </div>
