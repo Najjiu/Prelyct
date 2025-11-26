@@ -134,27 +134,9 @@
         }
       }
       
-      @keyframes shimmer {
-        0% { background-position: -200% center; }
-        100% { background-position: 200% center; }
-      }
-      
       @keyframes float {
         0%, 100% { transform: translateY(0px); }
-        50% { transform: translateY(-20px); }
-      }
-      
-      @keyframes pulse-glow {
-        0%, 100% { 
-          box-shadow: 0 0 20px rgba(37, 99, 235, 0.3),
-                      0 0 40px rgba(147, 51, 234, 0.2),
-                      0 0 60px rgba(236, 72, 153, 0.1);
-        }
-        50% { 
-          box-shadow: 0 0 30px rgba(37, 99, 235, 0.5),
-                      0 0 60px rgba(147, 51, 234, 0.4),
-                      0 0 90px rgba(236, 72, 153, 0.3);
-        }
+        50% { transform: translateY(-10px); }
       }
       
       .hero-badge {
@@ -176,30 +158,30 @@
       .hero-title-line:nth-child(3) { animation-delay: 0.7s; }
       
       .gradient-text {
-        background: linear-gradient(135deg, #2563eb 0%, #7c3aed 25%, #ec4899 50%, #f59e0b 75%, #10b981 100%);
-        background-size: 300% 300%;
+        background: linear-gradient(135deg, #1e40af 0%, #2563eb 50%, #3b82f6 100%);
+        background-size: 200% 200%;
         -webkit-background-clip: text;
         background-clip: text;
         -webkit-text-fill-color: transparent;
-        animation: gradient 8s ease infinite, shimmer 3s ease-in-out infinite;
+        animation: gradient 10s ease infinite;
       }
       
       .gradient-text-2 {
-        background: linear-gradient(135deg, #10b981 0%, #2563eb 25%, #7c3aed 50%, #ec4899 75%, #f59e0b 100%);
-        background-size: 300% 300%;
+        background: linear-gradient(135deg, #2563eb 0%, #3b82f6 50%, #60a5fa 100%);
+        background-size: 200% 200%;
         -webkit-background-clip: text;
         background-clip: text;
         -webkit-text-fill-color: transparent;
-        animation: gradient 10s ease infinite, shimmer 3.5s ease-in-out infinite;
+        animation: gradient 12s ease infinite;
       }
       
       .gradient-text-3 {
-        background: linear-gradient(135deg, #ec4899 0%, #f59e0b 25%, #10b981 50%, #2563eb 75%, #7c3aed 100%);
-        background-size: 300% 300%;
+        background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #3b82f6 100%);
+        background-size: 200% 200%;
         -webkit-background-clip: text;
         background-clip: text;
         -webkit-text-fill-color: transparent;
-        animation: gradient 12s ease infinite, shimmer 4s ease-in-out infinite;
+        animation: gradient 14s ease infinite;
       }
       
       .hero-description {
@@ -226,36 +208,27 @@
       .shape {
         position: absolute;
         border-radius: 50%;
-        filter: blur(80px);
-        opacity: 0.3;
-        animation: float 20s ease-in-out infinite;
+        filter: blur(100px);
+        opacity: 0.08;
+        animation: float 25s ease-in-out infinite;
       }
       
       .shape-1 {
-        width: 500px;
-        height: 500px;
-        background: linear-gradient(135deg, #2563eb, #7c3aed);
-        top: -200px;
-        left: -200px;
+        width: 600px;
+        height: 600px;
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        top: -300px;
+        left: -300px;
         animation-delay: 0s;
       }
       
       .shape-2 {
-        width: 400px;
-        height: 400px;
-        background: linear-gradient(135deg, #ec4899, #f59e0b);
-        bottom: -150px;
-        right: -150px;
-        animation-delay: 5s;
-      }
-      
-      .shape-3 {
-        width: 300px;
-        height: 300px;
-        background: linear-gradient(135deg, #10b981, #2563eb);
-        top: 50%;
-        right: 10%;
-        animation-delay: 10s;
+        width: 500px;
+        height: 500px;
+        background: linear-gradient(135deg, #60a5fa, #3b82f6);
+        bottom: -200px;
+        right: -200px;
+        animation-delay: 8s;
       }
       
       html { scroll-behavior: smooth; }
@@ -292,8 +265,8 @@
         }
         
         .shape {
-          filter: blur(60px);
-          opacity: 0.2;
+          filter: blur(80px);
+          opacity: 0.05;
         }
       }
     </style>
@@ -451,18 +424,13 @@
         <div class="animated-bg-shapes">
           <div class="shape shape-1"></div>
           <div class="shape shape-2"></div>
-          <div class="shape shape-3"></div>
         </div>
         
         <div
           class="relative z-10 mx-auto grid max-w-6xl gap-12 px-6 py-20 md:grid-cols-2 md:items-center"
         >
           <div class="space-y-8">
-            <div class="hero-badge inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-accent/10 via-purple-500/10 to-pink-500/10 px-4 py-2 text-sm font-semibold text-accent backdrop-blur-sm border border-accent/20">
-              <span class="relative flex h-2 w-2">
-                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
-                <span class="relative inline-flex rounded-full h-2 w-2 bg-accent"></span>
-              </span>
+            <div class="hero-badge inline-flex items-center gap-2 rounded-full bg-accent/10 px-4 py-2 text-sm font-semibold text-accent backdrop-blur-sm border border-accent/20">
               Built in Ghana · For African Institutions
             </div>
             <h1 class="hero-title font-display text-4xl font-bold tracking-tight text-midnight md:text-5xl lg:text-6xl leading-tight">
@@ -482,38 +450,37 @@
             <div class="hero-cta flex flex-wrap items-center gap-4">
               <a
                 href="/soleva-votes"
-                class="group relative overflow-hidden rounded-full bg-gradient-to-r from-accent via-purple-600 to-pink-500 px-8 py-4 text-base font-semibold text-white shadow-xl shadow-accent/30 transition-all duration-300 hover:shadow-2xl hover:scale-105 hover:shadow-purple-500/50"
+                class="group rounded-full bg-accent px-8 py-4 text-base font-semibold text-white shadow-lg shadow-accent/25 transition-all duration-300 hover:bg-accent-soft hover:shadow-xl hover:shadow-accent/40 hover:scale-[1.02]"
               >
-                <span class="relative z-10 flex items-center gap-2">
+                <span class="flex items-center gap-2">
                   <span>Launch a Vote</span>
                   <svg class="h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                   </svg>
                 </span>
-                <span class="absolute inset-0 bg-gradient-to-r from-purple-600 via-pink-500 to-accent opacity-0 transition-opacity duration-300 group-hover:opacity-100"></span>
               </a>
               <a
                 href="/contact"
-                class="rounded-full border-2 border-slate-300 bg-white/80 backdrop-blur-sm px-8 py-4 text-base font-semibold text-slate-700 transition-all duration-300 hover:border-accent hover:text-accent hover:shadow-lg hover:bg-white hover:scale-105"
+                class="rounded-full border-2 border-slate-300 bg-white px-8 py-4 text-base font-semibold text-slate-700 transition-all duration-300 hover:border-accent hover:text-accent hover:shadow-lg hover:scale-[1.02]"
                 >Hire Us for Your Project</a
               >
               <a
                 href="/soleva-hostels"
-                class="rounded-full border-2 border-accent/30 bg-gradient-to-r from-accent/5 via-purple-500/5 to-pink-500/5 backdrop-blur-sm px-8 py-4 text-base font-semibold text-accent transition-all duration-300 hover:bg-accent/10 hover:shadow-lg hover:scale-105"
+                class="rounded-full border-2 border-accent/30 bg-accent/5 px-8 py-4 text-base font-semibold text-accent transition-all duration-300 hover:bg-accent/10 hover:border-accent/50 hover:shadow-lg hover:scale-[1.02]"
                 >Join Hostels Waitlist</a
               >
             </div>
             <div class="hero-stats flex items-center gap-6">
-              <div class="group rounded-2xl border border-slate-200/50 bg-white/60 backdrop-blur-sm p-4 transition-all duration-300 hover:border-accent/30 hover:bg-white/80 hover:shadow-lg">
-                <p class="text-3xl font-bold bg-gradient-to-r from-accent to-purple-600 bg-clip-text text-transparent">10+</p>
+              <div class="group rounded-xl border border-slate-200 bg-white/80 backdrop-blur-sm p-4 transition-all duration-300 hover:border-accent/30 hover:shadow-md">
+                <p class="text-3xl font-bold text-midnight">10+</p>
                 <p class="text-xs uppercase tracking-wide text-slate-500">Active Clients Since Launch</p>
               </div>
-              <div class="group rounded-2xl border border-slate-200/50 bg-white/60 backdrop-blur-sm p-4 transition-all duration-300 hover:border-purple-500/30 hover:bg-white/80 hover:shadow-lg">
-                <p class="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text text-transparent">12K</p>
+              <div class="group rounded-xl border border-slate-200 bg-white/80 backdrop-blur-sm p-4 transition-all duration-300 hover:border-accent/30 hover:shadow-md">
+                <p class="text-3xl font-bold text-midnight">12K</p>
                 <p class="text-xs uppercase tracking-wide text-slate-500">Processed</p>
               </div>
-              <div class="group rounded-2xl border border-slate-200/50 bg-white/60 backdrop-blur-sm p-4 transition-all duration-300 hover:border-pink-500/30 hover:bg-white/80 hover:shadow-lg">
-                <p class="text-3xl font-bold bg-gradient-to-r from-pink-500 to-accent bg-clip-text text-transparent">24/7</p>
+              <div class="group rounded-xl border border-slate-200 bg-white/80 backdrop-blur-sm p-4 transition-all duration-300 hover:border-accent/30 hover:shadow-md">
+                <p class="text-3xl font-bold text-midnight">24/7</p>
                 <p class="text-xs uppercase tracking-wide text-slate-500">Support</p>
               </div>
             </div>
