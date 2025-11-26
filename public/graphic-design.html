@@ -103,6 +103,34 @@
         background: linear-gradient(135deg, #f8fafc 0%, #ffffff 50%, #eff6ff 100%);
         background-attachment: fixed;
       }
+      
+      /* Mobile Optimization */
+      @media (max-width: 640px) {
+        /* Ensure buttons are touch-friendly */
+        a[class*="rounded-full"],
+        button[class*="rounded-full"] {
+          min-height: 48px;
+          min-width: 48px;
+        }
+        
+        /* Improve text readability on mobile */
+        p {
+          font-size: 16px;
+          line-height: 1.6;
+        }
+        
+        /* Optimize images for mobile */
+        img {
+          max-width: 100%;
+          height: auto;
+        }
+        
+        /* Ensure proper spacing on mobile */
+        section {
+          padding-top: 3rem;
+          padding-bottom: 3rem;
+        }
+      }
     </style>
   </head>
   <body class="font-sans text-slate-800 antialiased">
@@ -279,6 +307,77 @@
                 <li>• Print-ready and interactive formats</li>
                 <li>• Accessibility and localisation support</li>
               </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Portfolio Gallery -->
+      <section class="border-t border-slate-200 bg-gradient-to-b from-white to-slate-50 py-20">
+        <div class="mx-auto max-w-6xl px-6">
+          <div class="mb-12 text-center">
+            <p class="text-sm font-semibold uppercase tracking-[0.3em] text-accent">Our Work</p>
+            <h2 class="mt-3 font-display text-4xl font-bold text-slate-900 md:text-5xl">Design Portfolio</h2>
+            <p class="mt-4 mx-auto max-w-2xl text-lg text-slate-600">
+              Flyers, posters, logos, and branding work we've created for clients across Ghana.
+            </p>
+          </div>
+          
+          <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            <!-- Portfolio Item 1 -->
+            <div class="group overflow-hidden rounded-2xl border-2 border-slate-200 bg-white shadow-lg transition-all hover:-translate-y-2 hover:shadow-2xl">
+              <div class="relative aspect-[3/4] overflow-hidden bg-slate-100">
+                <img src="images/portfolio/ah.png" alt="Portfolio work - Flyer design" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy" />
+                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100"></div>
+                <div class="absolute bottom-0 left-0 right-0 p-4 text-white opacity-0 transition-opacity group-hover:opacity-100">
+                  <p class="text-xs font-semibold uppercase tracking-wide">Flyer Design</p>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Portfolio Item 2 -->
+            <div class="group overflow-hidden rounded-2xl border-2 border-slate-200 bg-white shadow-lg transition-all hover:-translate-y-2 hover:shadow-2xl">
+              <div class="relative aspect-[3/4] overflow-hidden bg-slate-100">
+                <img src="images/portfolio/naj.png" alt="Portfolio work - Poster design" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy" />
+                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100"></div>
+                <div class="absolute bottom-0 left-0 right-0 p-4 text-white opacity-0 transition-opacity group-hover:opacity-100">
+                  <p class="text-xs font-semibold uppercase tracking-wide">Poster Design</p>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Portfolio Item 3 -->
+            <div class="group overflow-hidden rounded-2xl border-2 border-slate-200 bg-white shadow-lg transition-all hover:-translate-y-2 hover:shadow-2xl">
+              <div class="relative aspect-[3/4] overflow-hidden bg-slate-100">
+                <img src="images/portfolio/ste.png" alt="Portfolio work - Logo design" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy" />
+                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100"></div>
+                <div class="absolute bottom-0 left-0 right-0 p-4 text-white opacity-0 transition-opacity group-hover:opacity-100">
+                  <p class="text-xs font-semibold uppercase tracking-wide">Logo Design</p>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Portfolio Item 4 -->
+            <div class="group overflow-hidden rounded-2xl border-2 border-slate-200 bg-white shadow-lg transition-all hover:-translate-y-2 hover:shadow-2xl">
+              <div class="relative aspect-[3/4] overflow-hidden bg-slate-100">
+                <img src="images/portfolio/wa.png" alt="Portfolio work - Brand identity" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy" />
+                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100"></div>
+                <div class="absolute bottom-0 left-0 right-0 p-4 text-white opacity-0 transition-opacity group-hover:opacity-100">
+                  <p class="text-xs font-semibold uppercase tracking-wide">Brand Identity</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="mt-12 text-center">
+            <p class="text-sm text-slate-600">Want to see more? Check out our complete portfolio or start your project.</p>
+            <div class="mt-6 flex flex-wrap items-center justify-center gap-4">
+              <a href="/our-work" class="rounded-full border-2 border-slate-300 px-6 py-3 text-base font-semibold text-slate-700 transition hover:border-accent hover:text-accent hover:shadow-lg">
+                View Full Portfolio
+              </a>
+              <a href="/contact" class="rounded-full bg-accent px-6 py-3 text-base font-semibold text-white shadow-lg shadow-accent/30 transition hover:bg-accentSoft hover:shadow-xl">
+                Start Your Project
+              </a>
             </div>
           </div>
         </div>
