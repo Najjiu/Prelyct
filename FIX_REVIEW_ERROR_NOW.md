@@ -83,3 +83,4 @@ The table will have these columns:
 The most common issue is: **Table doesn't exist** → Run the SQL from Step 3!
 
 
+

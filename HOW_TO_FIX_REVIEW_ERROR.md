@@ -51,3 +51,4 @@ DROP TABLE IF EXISTS client_reviews CASCADE;
 Check the browser console (F12) for detailed error messages. The error should tell you exactly what's wrong.
 
 
+
