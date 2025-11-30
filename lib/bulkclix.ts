@@ -13,7 +13,45 @@ export interface BulkClixPaymentRequest {
   account_number: string
   channel: 'MTN' | 'Airtel' | 'Vodafone'
   account_name: string
-  client_reference: string
+  client_reference: string // Transaction ID - must be 36 characters or less
+  reference?: string // Optional short reference (max 20 characters) - unique per voter
+  callback_url?: string
+}
+
+/**
+ * Validate and truncate client_reference to meet BulkClix 36 character limit
+ */
+function validateClientReference(ref: string): string {
+  if (ref.length > 36) {
+    console.warn(`⚠️ Client reference exceeds 36 characters (${ref.length}), truncating: ${ref}`)
+    return ref.substring(0, 36)
+  }
+  return ref
+}
+
+/**
+ * Generate a unique 20-character reference based on voter information
+ * Format: {electionId8chars}{phoneLast4digits}{hash8chars} = 20 characters
+ */
+export function generateVoterReference(electionId: string, phoneNumber: string, transactionId: string): string {
+  // Get first 8 characters of election ID (UUID without hyphens)
+  const elecPart = electionId.replace(/-/g, '').substring(0, 8).toUpperCase()
+  
+  // Get last 4 digits of phone number
+  const phoneDigits = phoneNumber.replace(/\D/g, '') // Remove non-digits
+  const phonePart = phoneDigits.substring(Math.max(0, phoneDigits.length - 4)).padStart(4, '0')
+  
+  // Create 8-character hash from transaction ID + timestamp
+  const hashInput = `${transactionId}-${Date.now()}`
+  let hash = 0
+  for (let i = 0; i < hashInput.length; i++) {
+    const char = hashInput.charCodeAt(i)
+    hash = ((hash << 5) - hash) + char
+    hash = hash & hash // Convert to 32bit integer
+  }
+  const hashPart = Math.abs(hash).toString(36).substring(0, 8).toUpperCase().padStart(8, '0')
+  
+  return `${elecPart}${phonePart}${hashPart}`.substring(0, 20)
 }
 
 export interface BulkClixPaymentResponse {
@@ -94,150 +132,136 @@ export async function initiateBulkClixPayment(
 
     const channel = channelMap[request.channel] || request.channel
 
-    const payload = {
+    // Validate client_reference length (BulkClix requires max 36 characters)
+    const clientRef = validateClientReference(request.client_reference)
+    
+    // Generate or validate reference field (must be max 20 characters)
+    let shortReference: string
+    if (request.reference && request.reference.length <= 20) {
+      shortReference = request.reference
+    } else if (request.reference && request.reference.length > 20) {
+      // Truncate if too long
+      console.warn(`⚠️ Reference exceeds 20 characters (${request.reference.length}), truncating: ${request.reference}`)
+      shortReference = request.reference.substring(0, 20)
+    } else {
+      // Generate from transaction ID if not provided (use last 20 chars of UUID)
+      shortReference = clientRef.replace(/-/g, '').substring(0, 20).toUpperCase()
+    }
+
+    const payload: any = {
       amount: String(request.amount),
-      account_number: formatPhoneForBulkClix(request.account_number),
-      channel: channel,
-      account_name: request.account_name,
-      client_reference: request.client_reference,
+      currency: 'GHS',
+      phone_number: formatPhoneForBulkClix(request.account_number),
+      network: channel,
+      transaction_id: clientRef, // Full UUID (36 chars) for transaction_id
+      reference: shortReference, // Short reference (max 20 chars) for reference field
     }
 
-    // Try different possible endpoints based on BulkClix documentation
-    const possibleEndpoints = [
-      '/api/v1/payment-api/send/mobilemoney',
-      '/api/v1/payment-api/send/momo',
-      '/api/v1/payments/mobile-money',
-      '/api/v1/mobile-money/send',
-    ]
+    // Add callback URL if provided
+    if (request.callback_url) {
+      payload.callback_url = request.callback_url
+    }
+
+    // Use the correct endpoint from documentation: /api/v1/payment-api/momopay
+    const endpoint = '/api/v1/payment-api/momopay'
+    const url = `${BULKCLIX_API_URL}${endpoint}`
     
-    let lastError: Error | null = null
-    let successfulResponse: any = null
+    console.log('💳 Payment Request Details:', {
+      url,
+      payload,
+      api_key_set: !!BULKCLIX_API_KEY,
+    })
+
+    console.log('📤 Sending to BulkClix API:', {
+      endpoint,
+      amount: payload.amount,
+      phone: payload.phone_number,
+      network: payload.network,
+      transaction_id: payload.transaction_id,
+      reference: payload.reference,
+      callback_url: payload.callback_url,
+    })
     
-    for (const endpoint of possibleEndpoints) {
-      const url = `${BULKCLIX_API_URL}${endpoint}`
-      
-      console.log('🔵 BulkClix Request:', {
-        url,
-        payload,
-        headers: {
-          'x-api-key': BULKCLIX_API_KEY ? `${BULKCLIX_API_KEY.substring(0, 10)}...` : 'NOT SET',
-        },
+    // Log full payload for debugging USSD issues
+    console.log('🔍 Full BulkClix Payload:', JSON.stringify(payload, null, 2))
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': BULKCLIX_API_KEY,
+        'Accept': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    })
+
+    // Get response text first to see raw response
+    const responseText = await response.text()
+    console.log('📥 BulkClix API Response:', {
+      status: response.status,
+      statusText: response.statusText,
+      body: responseText,
+    })
+
+    let data: any
+    try {
+      data = JSON.parse(responseText)
+    } catch (e) {
+      console.error('❌ Failed to parse BulkClix response:', responseText)
+      throw new Error(`Invalid response from BulkClix API: ${responseText.substring(0, 200)}`)
+    }
+
+    if (!response.ok) {
+      const errorMessage = data.message || data.error || data.msg || data.errorMessage || `Payment initiation failed: ${response.statusText}`
+      console.error('❌ BulkClix Error Response:', {
+        status: response.status,
+        errorMessage,
+        data,
       })
-
-      try {
-            const response = await fetch(url, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-api-key': BULKCLIX_API_KEY,
-            'Accept': 'application/json',
-          },
-          body: JSON.stringify(payload),
-        })
-
-        // Get response text first to see raw response
-        const responseText = await response.text()
-        console.log('🔵 BulkClix Raw Response:', {
-          endpoint,
-          status: response.status,
-          statusText: response.statusText,
-          headers: Object.fromEntries(response.headers.entries()),
-          body: responseText,
-        })
-
-        let data: any
-        try {
-          data = JSON.parse(responseText)
-        } catch (e) {
-          console.warn(`⚠️ Endpoint ${endpoint} returned non-JSON response, trying next endpoint...`)
-          lastError = new Error(`Invalid response from ${endpoint}: ${responseText.substring(0, 200)}`)
-          continue
-        }
-
-        console.log('🔵 BulkClix Parsed Response:', data)
-
-        // If we get a 404 or endpoint not found, try next endpoint
-        if (response.status === 404 || response.status === 405) {
-          console.warn(`⚠️ Endpoint ${endpoint} returned ${response.status}, trying next endpoint...`)
-          lastError = new Error(`Endpoint not found: ${endpoint}`)
-          continue
-        }
-
-        if (!response.ok) {
-          const errorMessage = data.message || data.error || data.msg || `Payment initiation failed: ${response.statusText}`
-          console.error('❌ BulkClix Error Response:', {
-            endpoint,
-            status: response.status,
-            data,
-            errorMessage,
-          })
-          
-          // If it's an authentication or IP error, don't try other endpoints
-          if (response.status === 401 || response.status === 403) {
-            throw new Error(errorMessage)
-          }
-          
-          // For other errors, try next endpoint
-          lastError = new Error(errorMessage)
-          continue
-        }
-
-        // Handle different success response formats
-        // Format 1: { message: "success", data: { transaction_id: "..." } }
-        // Format 2: { success: true, transaction_id: "..." }
-        // Format 3: { status: "success", transaction_id: "..." }
-        const isSuccess = 
-          (data.message && data.message.toLowerCase().includes('success')) ||
-          data.success === true ||
-          data.status === 'success' ||
-          data.status === 'successful' ||
-          (data.data && data.data.transaction_id) ||
-          data.transaction_id
-
-        if (isSuccess) {
-          const transactionId = 
-            data.data?.transaction_id || 
-            data.transaction_id || 
-            data.data?.client_reference || 
-            request.client_reference
-
-          console.log('✅ BulkClix Payment Initiated Successfully:', {
-            endpoint,
-            transaction_id: transactionId,
-            client_reference: request.client_reference,
-          })
-
-          successfulResponse = {
-            success: true,
-            transaction_id: transactionId,
-            client_reference: data.data?.client_reference || data.client_reference || request.client_reference,
-            message: data.message || data.msg || 'Payment initiated successfully',
-            data: data.data || data,
-          }
-          break
-        }
-
-        const errorMessage = data.message || data.error || data.msg || 'Payment initiation failed'
-        console.warn(`⚠️ Endpoint ${endpoint} returned unsuccessful response, trying next...`)
-        lastError = new Error(errorMessage)
-      } catch (error: any) {
-        console.warn(`⚠️ Error with endpoint ${endpoint}:`, error.message)
-        lastError = error
-        // Continue to next endpoint unless it's a clear auth/network error
-        if (error.message?.includes('fetch') || error.message?.includes('network')) {
-          throw error
-        }
-      }
+      throw new Error(errorMessage)
     }
-    
-    // If we found a successful response, return it
-    if (successfulResponse) {
-      return successfulResponse
+
+    // Handle success response - check for transaction_id in various possible formats
+    const transactionId = 
+      data.data?.transaction_id || 
+      data.transaction_id || 
+      data.data?.client_reference || 
+      request.client_reference
+
+    if (!transactionId) {
+      console.error('❌ No transaction ID in response:', data)
+      throw new Error('BulkClix API did not return a transaction ID')
     }
+
+    // Check if USSD prompt was actually triggered
+    const ussdStatus = data.status || data.data?.status || data.ussd_status
+    const message = data.message || data.msg || data.data?.message || 'Payment initiated successfully'
     
-    // If all endpoints failed, throw the last error
-    console.error('❌ All BulkClix endpoints failed. Last error:', lastError)
-    throw lastError || new Error('Payment initiation failed: All endpoints returned errors')
+    console.log('✅ BulkClix Payment Initiated Successfully:', {
+      transaction_id: transactionId,
+      client_reference: request.client_reference,
+      phone_number: payload.phone_number,
+      network: payload.network,
+      ussd_status: ussdStatus,
+      message: message,
+      full_response: data,
+    })
+    
+    // Warn if USSD prompt might not have been triggered
+    if (message.toLowerCase().includes('success') && !ussdStatus) {
+      console.warn('⚠️ Payment initiated but USSD status unclear. Please check BulkClix account configuration:')
+      console.warn('   - Ensure mobile money collection is enabled')
+      console.warn('   - Verify server IP is whitelisted')
+      console.warn('   - Check phone number format matches network requirements')
+    }
+
+    return {
+      success: true,
+      transaction_id: transactionId,
+      client_reference: data.data?.client_reference || data.client_reference || request.client_reference,
+      message: message,
+      data: data.data || data,
+    }
   } catch (error: any) {
     console.error('BulkClix payment initiation error:', error)
     return {
@@ -249,27 +273,85 @@ export async function initiateBulkClixPayment(
 
 /**
  * Check the status of a BulkClix transaction
- * NOTE: The BulkClix API documentation doesn't provide a transaction status endpoint.
- * Status updates are received via webhooks. This function is a placeholder.
- * In production, implement webhook handling at /api/payments/bulkclix-webhook
+ * Uses the checkstatus endpoint from BulkClix API
  */
 export async function checkBulkClixTransactionStatus(
   transactionId: string
 ): Promise<BulkClixTransactionStatus | null> {
-  // Since there's no status endpoint in the API docs, we can't check status directly.
-  // Status will be updated via webhooks. This function returns pending status.
-  // The actual status will be updated when the webhook is received.
-  
-  console.warn('BulkClix: No status endpoint available. Status updates must come via webhooks.')
-  
-  return {
-    transaction_id: transactionId,
-    status: 'pending',
-    amount: 0,
-    currency: 'GHS',
-    phone: '',
-    network: 'MTN',
-    message: 'Status check not available. Waiting for webhook confirmation.',
+  try {
+    if (!BULKCLIX_API_KEY) {
+      throw new Error('BulkClix API key is not configured')
+    }
+
+    // Use checkstatus endpoint from documentation
+    const url = `${BULKCLIX_API_URL}/api/v1/payment-api/checkstatus/${transactionId}`
+    
+    console.log('🔍 Checking BulkClix transaction status:', transactionId)
+
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'x-api-key': BULKCLIX_API_KEY,
+        'Accept': 'application/json',
+      },
+    })
+
+    if (!response.ok) {
+      if (response.status === 404) {
+        // Transaction not found yet (normal for first few seconds)
+        return {
+          transaction_id: transactionId,
+          status: 'pending',
+          amount: 0,
+          currency: 'GHS',
+          phone: '',
+          network: 'MTN',
+          message: 'Transaction not found yet',
+        }
+      }
+      throw new Error(`Status check failed: ${response.statusText}`)
+    }
+
+    const responseText = await response.text()
+    let data: any
+    try {
+      data = JSON.parse(responseText)
+    } catch (e) {
+      console.error('Failed to parse status response:', responseText)
+      return null
+    }
+
+    console.log('📥 BulkClix Status Response:', data)
+
+    // Parse nested response structure: responseData.data.status
+    const statusData = data.data || data
+    const status = statusData.status || data.status || 'pending'
+    
+    // Normalize status
+    const normalizedStatus = mapBulkClixStatus(status)
+
+    // Check for failure keywords in message
+    const message = data.message || statusData.message || ''
+    const failureKeywords = ['insufficient', 'cannot', 'fail', 'declin', 'cancel', 'rejected']
+    const hasFailureKeyword = failureKeywords.some(keyword => 
+      message.toLowerCase().includes(keyword)
+    )
+
+    const finalStatus = hasFailureKeyword ? 'failed' : normalizedStatus
+
+    return {
+      transaction_id: statusData.transaction_id || transactionId,
+      status: finalStatus,
+      amount: parseFloat(statusData.amount || '0'),
+      currency: 'GHS',
+      phone: statusData.phone_number || '',
+      network: statusData.network || 'MTN',
+      reference: statusData.ext_transaction_id || statusData.transaction_id,
+      message: message,
+    }
+  } catch (error: any) {
+    console.error('BulkClix status check error:', error)
+    return null
   }
 }
 
@@ -354,19 +436,26 @@ function mapBulkClixStatus(status: string): 'pending' | 'successful' | 'failed' 
 /**
  * Format phone number for BulkClix (remove spaces, ensure proper format)
  */
+/**
+ * Format phone number for BulkClix API
+ * BulkClix requires local format for USSD: 0XXXXXXXXX (must start with 0)
+ */
 export function formatPhoneForBulkClix(phone: string): string {
   // Remove all spaces and non-digit characters except +
-  let formatted = phone.replace(/[^\d+]/g, '')
+  let cleaned = phone.replace(/[^\d+]/g, '')
   
-  // Convert +233 to 0
-  if (formatted.startsWith('+233')) {
-    formatted = '0' + formatted.substring(4)
+  // Convert international format (+233 or 233) to local format (0)
+  if (cleaned.startsWith('+233')) {
+    cleaned = '0' + cleaned.substring(4)
+  } else if (cleaned.startsWith('233')) {
+    cleaned = '0' + cleaned.substring(3)
   }
   
-  // Ensure it starts with 0
-  if (!formatted.startsWith('0')) {
-    formatted = '0' + formatted
+  // Ensure it starts with 0 (local Ghana format)
+  if (!cleaned.startsWith('0')) {
+    cleaned = '0' + cleaned
   }
   
-  return formatted
+  // Return local format (e.g., 0244123456) - required for USSD prompts
+  return cleaned
 }

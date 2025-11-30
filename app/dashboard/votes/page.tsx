@@ -45,10 +45,26 @@ export default function VotesPage() {
     loadElections()
   }, [loadElections])
 
-  const handleCopyLink = (electionId: string) => {
-    const link = `${typeof window !== 'undefined' ? window.location.origin : ''}/vote/${electionId}`
+  const getVotingLink = useCallback((election: Election) => {
+    if (typeof window === 'undefined') return ''
+    const origin = window.location.origin
+    
+    // Public contests use the public voting page
+    if (election.mode === 'public_contest') {
+      if (election.public_voting_link) {
+        return `${origin}/public-vote/${election.public_voting_link}`
+      }
+      return `${origin}/public-vote/${election.id}`
+    }
+    
+    // Institutional elections use the regular vote page
+    return `${origin}/vote?electionId=${election.id}`
+  }, [])
+
+  const handleCopyLink = (election: Election) => {
+    const link = getVotingLink(election)
     navigator.clipboard.writeText(link)
-    setCopiedLink(electionId)
+    setCopiedLink(election.id)
     setTimeout(() => setCopiedLink(null), 2000)
   }
 
@@ -153,10 +169,15 @@ export default function VotesPage() {
             )}
           </div>
         ) : (
-          <Table headers={['Name', 'Status', 'Payment', 'Voting Link', 'Actions']}>
+          <Table headers={['Name', 'Mode', 'Status', 'Payment', 'Voting Link', 'Actions']}>
             {filteredElections.map((election) => (
               <TableRow key={election.id}>
                 <TableCell>{election.name}</TableCell>
+                <TableCell>
+                  <Badge variant={election.mode === 'public_contest' ? 'info' : 'default'}>
+                    {election.mode === 'public_contest' ? 'Public' : 'Institutional'}
+                  </Badge>
+                </TableCell>
                 <TableCell>
                   <Badge variant={getStatusVariant(election.status)}>
                     {election.status}
@@ -171,7 +192,7 @@ export default function VotesPage() {
                   {election.status === 'active' ? (
                     <div className="flex items-center gap-2">
                       <button
-                        onClick={() => handleCopyLink(election.id)}
+                        onClick={() => handleCopyLink(election)}
                         className="text-primary hover:text-primary-dark text-sm font-medium flex items-center gap-1"
                       >
                         {copiedLink === election.id ? (

@@ -538,9 +538,9 @@ export default function DashboardPage() {
                         <Badge variant={getStatusVariant(election.status)}>
                           {election.status}
                         </Badge>
-                        {election.mode === 'public_contest' && (
-                          <Badge variant="info">Public</Badge>
-                        )}
+                        <Badge variant={election.mode === 'public_contest' ? 'info' : 'default'}>
+                          {election.mode === 'public_contest' ? 'Public' : 'Institutional'}
+                        </Badge>
                       </div>
                       <p className="text-sm text-gray-600 line-clamp-1">
                         {election.description || 'No description'}

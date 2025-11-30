@@ -104,6 +104,16 @@
         background-attachment: fixed;
       }
       
+      /* Portfolio Image Hover/Touch Effects */
+      .portfolio-item {
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+      }
+      
+      .portfolio-item:active {
+        transform: scale(0.98);
+      }
+      
       /* Mobile Optimization */
       @media (max-width: 640px) {
         /* Ensure buttons are touch-friendly */
@@ -129,6 +139,44 @@
         section {
           padding-top: 3rem;
           padding-bottom: 3rem;
+        }
+        
+        /* Portfolio mobile optimizations */
+        .portfolio-grid {
+          gap: 1rem;
+        }
+        
+        .portfolio-item {
+          border-width: 1px;
+          border-radius: 1rem;
+        }
+        
+        /* Clean images on mobile - no overlay unless tapped */
+        .portfolio-item:active .portfolio-overlay,
+        .portfolio-item.touched .portfolio-overlay {
+          opacity: 1 !important;
+        }
+        
+        .portfolio-item:active .portfolio-gradient,
+        .portfolio-item.touched .portfolio-gradient {
+          opacity: 1 !important;
+        }
+        
+        /* Better touch feedback */
+        .portfolio-item:active {
+          transform: scale(0.97);
+        }
+      }
+      
+      @media (min-width: 641px) {
+        /* Touch devices - show overlay on hover/touch */
+        @media (hover: hover) {
+          .portfolio-item:hover .portfolio-overlay {
+            opacity: 1;
+          }
+          .portfolio-item:hover .portfolio-gradient {
+            opacity: 1;
+          }
         }
       }
     </style>
@@ -212,8 +260,11 @@
             <div class="inline-flex items-center gap-2 rounded-full bg-accent/10 px-4 py-1 text-sm font-semibold text-accent">
               Creative Studio
             </div>
-            <h1 class="text-4xl font-bold text-slate-900 md:text-5xl">
-              Design and storytelling that feel distinctly African—and undeniably premium
+            <h1 class="text-4xl font-bold text-slate-900 md:text-5xl leading-tight">
+              <span class="block">Premium design</span>
+              <span class="block bg-gradient-to-r from-accent to-slate-900 bg-clip-text text-transparent">
+                rooted in Africa.
+              </span>
             </h1>
             <p class="text-lg text-slate-600">
               We craft brand identities, motion-ready presentations, campaign visuals, and content systems that help you win attention and build trust.
@@ -313,69 +364,112 @@
       </section>
 
       <!-- Portfolio Gallery -->
-      <section class="border-t border-slate-200 bg-gradient-to-b from-white to-slate-50 py-20">
-        <div class="mx-auto max-w-6xl px-6">
-          <div class="mb-12 text-center">
-            <p class="text-sm font-semibold uppercase tracking-[0.3em] text-accent">Our Work</p>
-            <h2 class="mt-3 font-display text-4xl font-bold text-slate-900 md:text-5xl">Design Portfolio</h2>
-            <p class="mt-4 mx-auto max-w-2xl text-lg text-slate-600">
+      <section class="border-t border-slate-200 bg-gradient-to-b from-white to-slate-50 py-12 sm:py-16 lg:py-20">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div class="mb-8 sm:mb-12 text-center">
+            <p class="text-xs sm:text-sm font-semibold uppercase tracking-[0.3em] text-accent">Our Work</p>
+            <h2 class="mt-3 font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900">Design Portfolio</h2>
+            <p class="mt-3 sm:mt-4 mx-auto max-w-2xl text-base sm:text-lg text-slate-600 px-4">
               Flyers, posters, logos, and branding work we've created for clients across Ghana.
             </p>
           </div>
           
-          <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <!-- Portfolio Grid - Responsive: 1 col mobile, 2 tablet, 3 desktop, 4-5 large -->
+          <div class="portfolio-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-5 lg:gap-6">
             <!-- Portfolio Item 1 -->
-            <div class="group overflow-hidden rounded-2xl border-2 border-slate-200 bg-white shadow-lg transition-all hover:-translate-y-2 hover:shadow-2xl">
+            <div class="portfolio-item group overflow-hidden rounded-xl sm:rounded-2xl border border-slate-200 sm:border-2 bg-white shadow-md sm:shadow-lg transition-all duration-300 hover:shadow-xl sm:hover:-translate-y-1 active:scale-[0.98]">
               <div class="relative aspect-[3/4] overflow-hidden bg-slate-100">
-                <img src="images/portfolio/ah.png" alt="Portfolio work - Flyer design" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy" />
-                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100"></div>
-                <div class="absolute bottom-0 left-0 right-0 p-4 text-white opacity-0 transition-opacity group-hover:opacity-100">
-                  <p class="text-xs font-semibold uppercase tracking-wide">Flyer Design</p>
+                <img 
+                  src="images/our works/WhatsApp Image 2025-10-26 at 14.05.22.jpeg" 
+                  alt="Portfolio work - Flyer design" 
+                  class="h-full w-full object-contain transition-transform duration-500 group-hover:scale-105" 
+                  loading="lazy"
+                  decoding="async"
+                />
+                <div class="portfolio-gradient absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 sm:opacity-0 transition-opacity duration-300"></div>
+                <div class="portfolio-overlay absolute bottom-0 left-0 right-0 p-3 sm:p-4 text-white opacity-0 sm:opacity-0 transition-opacity duration-300">
+                  <p class="text-xs sm:text-sm font-semibold uppercase tracking-wide drop-shadow-lg">App Design</p>
                 </div>
               </div>
             </div>
             
             <!-- Portfolio Item 2 -->
-            <div class="group overflow-hidden rounded-2xl border-2 border-slate-200 bg-white shadow-lg transition-all hover:-translate-y-2 hover:shadow-2xl">
+            <div class="portfolio-item group overflow-hidden rounded-xl sm:rounded-2xl border border-slate-200 sm:border-2 bg-white shadow-md sm:shadow-lg transition-all duration-300 hover:shadow-xl sm:hover:-translate-y-1 active:scale-[0.98]">
               <div class="relative aspect-[3/4] overflow-hidden bg-slate-100">
-                <img src="images/portfolio/naj.png" alt="Portfolio work - Poster design" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy" />
-                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100"></div>
-                <div class="absolute bottom-0 left-0 right-0 p-4 text-white opacity-0 transition-opacity group-hover:opacity-100">
-                  <p class="text-xs font-semibold uppercase tracking-wide">Poster Design</p>
+                <img 
+                  src="images/our works/WhatsApp Image 2025-11-30 at 01.21.08.jpeg" 
+                  alt="Portfolio work - Poster design" 
+                  class="h-full w-full object-contain transition-transform duration-500 group-hover:scale-105" 
+                  loading="lazy"
+                  decoding="async"
+                />
+                <div class="portfolio-gradient absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 sm:opacity-0 transition-opacity duration-300"></div>
+                <div class="portfolio-overlay absolute bottom-0 left-0 right-0 p-3 sm:p-4 text-white opacity-0 sm:opacity-0 transition-opacity duration-300">
+                  <p class="text-xs sm:text-sm font-semibold uppercase tracking-wide drop-shadow-lg">Banner Design - Ready Print</p>
                 </div>
               </div>
             </div>
             
             <!-- Portfolio Item 3 -->
-            <div class="group overflow-hidden rounded-2xl border-2 border-slate-200 bg-white shadow-lg transition-all hover:-translate-y-2 hover:shadow-2xl">
+            <div class="portfolio-item group overflow-hidden rounded-xl sm:rounded-2xl border border-slate-200 sm:border-2 bg-white shadow-md sm:shadow-lg transition-all duration-300 hover:shadow-xl sm:hover:-translate-y-1 active:scale-[0.98]">
               <div class="relative aspect-[3/4] overflow-hidden bg-slate-100">
-                <img src="images/portfolio/ste.png" alt="Portfolio work - Logo design" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy" />
-                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100"></div>
-                <div class="absolute bottom-0 left-0 right-0 p-4 text-white opacity-0 transition-opacity group-hover:opacity-100">
-                  <p class="text-xs font-semibold uppercase tracking-wide">Logo Design</p>
+                <img 
+                  src="images/our works/WhatsApp Image 2025-11-30 at 01.21.09.jpeg" 
+                  alt="Portfolio work - Logo design" 
+                  class="h-full w-full object-contain transition-transform duration-500 group-hover:scale-105" 
+                  loading="lazy"
+                  decoding="async"
+                />
+                <div class="portfolio-gradient absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 sm:opacity-0 transition-opacity duration-300"></div>
+                <div class="portfolio-overlay absolute bottom-0 left-0 right-0 p-3 sm:p-4 text-white opacity-0 sm:opacity-0 transition-opacity duration-300">
+                  <p class="text-xs sm:text-sm font-semibold uppercase tracking-wide drop-shadow-lg">Flyer Design</p>
                 </div>
               </div>
             </div>
             
             <!-- Portfolio Item 4 -->
-            <div class="group overflow-hidden rounded-2xl border-2 border-slate-200 bg-white shadow-lg transition-all hover:-translate-y-2 hover:shadow-2xl">
+            <div class="portfolio-item group overflow-hidden rounded-xl sm:rounded-2xl border border-slate-200 sm:border-2 bg-white shadow-md sm:shadow-lg transition-all duration-300 hover:shadow-xl sm:hover:-translate-y-1 active:scale-[0.98]">
               <div class="relative aspect-[3/4] overflow-hidden bg-slate-100">
-                <img src="images/portfolio/wa.png" alt="Portfolio work - Brand identity" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy" />
-                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100"></div>
-                <div class="absolute bottom-0 left-0 right-0 p-4 text-white opacity-0 transition-opacity group-hover:opacity-100">
-                  <p class="text-xs font-semibold uppercase tracking-wide">Brand Identity</p>
+                <img 
+                  src="images/our works/WhatsApp Image 2025-11-30 at 01.21.10 (1).jpeg" 
+                  alt="Portfolio work - Brand identity" 
+                  class="h-full w-full object-contain transition-transform duration-500 group-hover:scale-105" 
+                  loading="lazy"
+                  decoding="async"
+                />
+                <div class="portfolio-gradient absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 sm:opacity-0 transition-opacity duration-300"></div>
+                <div class="portfolio-overlay absolute bottom-0 left-0 right-0 p-3 sm:p-4 text-white opacity-0 sm:opacity-0 transition-opacity duration-300">
+                  <p class="text-xs sm:text-sm font-semibold uppercase tracking-wide drop-shadow-lg">Flyer Design</p>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Portfolio Item 5 -->
+            <div class="portfolio-item group overflow-hidden rounded-xl sm:rounded-2xl border border-slate-200 sm:border-2 bg-white shadow-md sm:shadow-lg transition-all duration-300 hover:shadow-xl sm:hover:-translate-y-1 active:scale-[0.98]">
+              <div class="relative aspect-[3/4] overflow-hidden bg-slate-100">
+                <img 
+                  src="images/our works/WhatsApp Image 2025-11-30 at 01.21.10.jpeg" 
+                  alt="Portfolio work - Design showcase" 
+                  class="h-full w-full object-contain transition-transform duration-500 group-hover:scale-105" 
+                  loading="lazy"
+                  decoding="async"
+                />
+                <div class="portfolio-gradient absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 sm:opacity-0 transition-opacity duration-300"></div>
+                <div class="portfolio-overlay absolute bottom-0 left-0 right-0 p-3 sm:p-4 text-white opacity-0 sm:opacity-0 transition-opacity duration-300">
+                  <p class="text-xs sm:text-sm font-semibold uppercase tracking-wide drop-shadow-lg" >Logo Design</p>
                 </div>
               </div>
             </div>
           </div>
           
-          <div class="mt-12 text-center">
-            <p class="text-sm text-slate-600">Want to see more? Check out our complete portfolio or start your project.</p>
-            <div class="mt-6 flex flex-wrap items-center justify-center gap-4">
-              <a href="/our-work" class="rounded-full border-2 border-slate-300 px-6 py-3 text-base font-semibold text-slate-700 transition hover:border-accent hover:text-accent hover:shadow-lg">
+          <!-- CTA Section -->
+          <div class="mt-10 sm:mt-12 text-center px-4">
+            <p class="text-sm sm:text-base text-slate-600 mb-5 sm:mb-6">Want to see more? Check out our complete portfolio or start your project.</p>
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
+              <a href="/our-work" class="w-full sm:w-auto rounded-full border-2 border-slate-300 px-6 py-3 text-sm sm:text-base font-semibold text-slate-700 transition hover:border-accent hover:text-accent hover:shadow-lg active:scale-95">
                 View Full Portfolio
               </a>
-              <a href="/contact" class="rounded-full bg-accent px-6 py-3 text-base font-semibold text-white shadow-lg shadow-accent/30 transition hover:bg-accentSoft hover:shadow-xl">
+              <a href="/contact" class="w-full sm:w-auto rounded-full bg-accent px-6 py-3 text-sm sm:text-base font-semibold text-white shadow-lg shadow-accent/30 transition hover:bg-accentSoft hover:shadow-xl active:scale-95">
                 Start Your Project
               </a>
             </div>

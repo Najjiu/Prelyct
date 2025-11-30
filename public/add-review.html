@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Add a Review · Prelyct</title>
+    <meta
+      name="description"
+      content="Share your experience working with Prelyct. Your feedback helps us serve our clients better."
+    />
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              accent: {
+                DEFAULT: '#2563eb',
+                soft: '#60a5fa',
+              },
+            },
+            fontFamily: {
+              sans: ['Manrope', 'ui-sans-serif', 'system-ui'],
+            },
+          },
+        },
+      };
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      html { scroll-behavior: smooth; }
+      body { 
+        background: linear-gradient(135deg, #f8fafc 0%, #ffffff 50%, #eff6ff 100%);
+        background-attachment: fixed;
+      }
+    </style>
+  </head>
+  <body class="font-sans text-slate-800 antialiased">
+    <header class="sticky top-0 z-50 border-b border-slate-200 bg-white/90 backdrop-blur">
+      <div class="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+        <a href="/" class="flex items-center gap-2">
+          <img src="images/logo.png" alt="Prelyct logo" class="h-10 w-10" />
+          <span class="text-xl font-semibold tracking-tight text-slate-900">Prelyct</span>
+        </a>
+        <nav class="hidden items-center gap-8 text-sm font-medium text-slate-600 lg:flex">
+          <a href="/" class="transition hover:text-accent">Home</a>
+          <a href="/our-work" class="transition hover:text-accent">Our Work</a>
+          <a href="/about" class="transition hover:text-accent">About</a>
+          <a href="/contact" class="transition hover:text-accent">Contact</a>
+        </nav>
+        <a href="/our-work" class="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-accent hover:text-accent">View Our Work</a>
+      </div>
+    </header>
+
+    <main class="min-h-screen py-12 sm:py-16">
+      <div class="mx-auto max-w-2xl px-6">
+        <div class="text-center mb-10">
+          <h1 class="text-3xl sm:text-4xl font-bold text-slate-900 mb-3">Share Your Experience</h1>
+          <p class="text-lg text-slate-600">
+            Help us showcase the impact of our work. Your review will help others make informed decisions.
+          </p>
+        </div>
+
+        <div id="success-message" class="hidden mb-6 p-6 rounded-xl bg-green-50 border-2 border-green-300">
+          <div class="flex items-center gap-3">
+            <svg class="w-6 h-6 text-green-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            <div>
+              <p class="font-semibold text-green-900">Review Submitted Successfully!</p>
+              <p class="text-sm text-green-700 mt-1">Thank you for your feedback. Your review will be reviewed and published shortly.</p>
+            </div>
+          </div>
+        </div>
+
+        <div id="error-message" class="hidden mb-6 p-6 rounded-xl bg-red-50 border-2 border-red-300">
+          <div class="flex items-center gap-3">
+            <svg class="w-6 h-6 text-red-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+            <div>
+              <p class="font-semibold text-red-900">Error</p>
+              <p id="error-text" class="text-sm text-red-700 mt-1"></p>
+            </div>
+          </div>
+        </div>
+
+        <form id="review-form" class="space-y-6 bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-sm">
+          <!-- Client Information -->
+          <div>
+            <h2 class="text-lg font-semibold text-slate-900 mb-4">Your Information</h2>
+            <div class="space-y-4">
+              <div>
+                <label for="client_name" class="block text-sm font-medium text-slate-700 mb-2">
+                  Your Name <span class="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="client_name"
+                  name="client_name"
+                  required
+                  class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
+                  placeholder="John Doe"
+                />
+              </div>
+              <div class="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <label for="client_title" class="block text-sm font-medium text-slate-700 mb-2">
+                    Your Title
+                  </label>
+                  <input
+                    type="text"
+                    id="client_title"
+                    name="client_title"
+                    class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
+                    placeholder="Project Manager"
+                  />
+                </div>
+                <div>
+                  <label for="client_company" class="block text-sm font-medium text-slate-700 mb-2">
+                    Company/Organization
+                  </label>
+                  <input
+                    type="text"
+                    id="client_company"
+                    name="client_company"
+                    class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
+                    placeholder="University of Ghana"
+                  />
+                </div>
+              </div>
+              <div class="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <label for="client_email" class="block text-sm font-medium text-slate-700 mb-2">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    id="client_email"
+                    name="client_email"
+                    class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
+                    placeholder="john@example.com"
+                  />
+                </div>
+                <div>
+                  <label for="client_phone" class="block text-sm font-medium text-slate-700 mb-2">
+                    Phone
+                  </label>
+                  <input
+                    type="tel"
+                    id="client_phone"
+                    name="client_phone"
+                    class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
+                    placeholder="+233 XX XXX XXXX"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Project Information -->
+          <div>
+            <h2 class="text-lg font-semibold text-slate-900 mb-4">Project Information</h2>
+            <div class="space-y-4">
+              <div>
+                <label for="project_name" class="block text-sm font-medium text-slate-700 mb-2">
+                  Project Name <span class="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="project_name"
+                  name="project_name"
+                  required
+                  class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
+                  placeholder="Student Elections 2024"
+                />
+              </div>
+              <div>
+                <label for="project_category" class="block text-sm font-medium text-slate-700 mb-2">
+                  Project Category <span class="text-red-500">*</span>
+                </label>
+                <select
+                  id="project_category"
+                  name="project_category"
+                  required
+                  class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
+                >
+                  <option value="">Select a category</option>
+                  <option value="voting">Voting Systems</option>
+                  <option value="hostel">Hostel Management</option>
+                  <option value="web-development">Web & App Development</option>
+                  <option value="graphic-design">Graphic Design & Branding</option>
+                  <option value="ms-suite">Microsoft Office Services</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              <div>
+                <label for="project_description" class="block text-sm font-medium text-slate-700 mb-2">
+                  Project Description
+                </label>
+                <textarea
+                  id="project_description"
+                  name="project_description"
+                  rows="3"
+                  class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
+                  placeholder="Brief description of the project..."
+                ></textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- Review Content -->
+          <div>
+            <h2 class="text-lg font-semibold text-slate-900 mb-4">Your Review</h2>
+            <div class="space-y-4">
+              <div>
+                <label for="rating" class="block text-sm font-medium text-slate-700 mb-2">
+                  Rating <span class="text-red-500">*</span>
+                </label>
+                <div class="flex items-center gap-2">
+                  <div id="rating-stars" class="flex gap-1">
+                    <button type="button" data-rating="1" class="rating-star text-2xl text-slate-300 hover:text-amber-400 transition">★</button>
+                    <button type="button" data-rating="2" class="rating-star text-2xl text-slate-300 hover:text-amber-400 transition">★</button>
+                    <button type="button" data-rating="3" class="rating-star text-2xl text-slate-300 hover:text-amber-400 transition">★</button>
+                    <button type="button" data-rating="4" class="rating-star text-2xl text-slate-300 hover:text-amber-400 transition">★</button>
+                    <button type="button" data-rating="5" class="rating-star text-2xl text-slate-300 hover:text-amber-400 transition">★</button>
+                  </div>
+                  <input type="hidden" id="rating" name="rating" required />
+                  <span id="rating-text" class="text-sm text-slate-600"></span>
+                </div>
+              </div>
+              <div>
+                <label for="review_text" class="block text-sm font-medium text-slate-700 mb-2">
+                  Your Review <span class="text-red-500">*</span>
+                </label>
+                <textarea
+                  id="review_text"
+                  name="review_text"
+                  required
+                  rows="6"
+                  class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
+                  placeholder="Share your experience working with Prelyct on this project..."
+                ></textarea>
+                <p class="text-xs text-slate-500 mt-1">Tell us about your experience, the results achieved, and how Prelyct helped you succeed.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Submit Button -->
+          <div class="pt-4">
+            <button
+              type="submit"
+              id="submit-btn"
+              class="w-full sm:w-auto px-8 py-3 bg-accent text-white font-semibold rounded-full hover:bg-accentSoft transition shadow-lg shadow-accent/30 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Submit Review
+            </button>
+            <p class="text-xs text-slate-500 mt-3">
+              By submitting, you agree that your review may be published on our website. Reviews are moderated before being published.
+            </p>
+          </div>
+        </form>
+      </div>
+    </main>
+
+    <footer class="border-t border-slate-200 bg-white py-10">
+      <div class="mx-auto max-w-6xl px-6 text-center">
+        <p class="text-sm text-slate-500">
+          © <span id="year"></span> Prelyct. All rights reserved.
+        </p>
+      </div>
+    </footer>
+
+    <script>
+      // Set current year
+      document.getElementById('year').textContent = new Date().getFullYear();
+
+      // Rating stars functionality
+      let selectedRating = 0;
+      const ratingStars = document.querySelectorAll('.rating-star');
+      const ratingInput = document.getElementById('rating');
+      const ratingText = document.getElementById('rating-text');
+
+      ratingStars.forEach((star, index) => {
+        star.addEventListener('click', () => {
+          selectedRating = index + 1;
+          ratingInput.value = selectedRating;
+          
+          // Update star colors
+          ratingStars.forEach((s, i) => {
+            if (i < selectedRating) {
+              s.classList.remove('text-slate-300');
+              s.classList.add('text-amber-400');
+            } else {
+              s.classList.remove('text-amber-400');
+              s.classList.add('text-slate-300');
+            }
+          });
+
+          // Update rating text
+          const ratingLabels = ['', 'Poor', 'Fair', 'Good', 'Very Good', 'Excellent'];
+          ratingText.textContent = ratingLabels[selectedRating];
+        });
+
+        star.addEventListener('mouseenter', () => {
+          const hoverRating = index + 1;
+          ratingStars.forEach((s, i) => {
+            if (i < hoverRating) {
+              s.classList.remove('text-slate-300');
+              s.classList.add('text-amber-400');
+            }
+          });
+        });
+      });
+
+      document.getElementById('rating-stars').addEventListener('mouseleave', () => {
+        ratingStars.forEach((s, i) => {
+          if (i < selectedRating) {
+            s.classList.remove('text-slate-300');
+            s.classList.add('text-amber-400');
+          } else {
+            s.classList.remove('text-amber-400');
+            s.classList.add('text-slate-300');
+          }
+        });
+      });
+
+      // Form submission
+      document.getElementById('review-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const form = e.target;
+        const submitBtn = document.getElementById('submit-btn');
+        const successMsg = document.getElementById('success-message');
+        const errorMsg = document.getElementById('error-message');
+        const errorText = document.getElementById('error-text');
+
+        // Hide previous messages
+        successMsg.classList.add('hidden');
+        errorMsg.classList.add('hidden');
+
+        // Validate rating
+        if (!selectedRating) {
+          errorText.textContent = 'Please select a rating';
+          errorMsg.classList.remove('hidden');
+          return;
+        }
+
+        // Disable submit button
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Submitting...';
+
+        // Get form data
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
+        data.rating = parseInt(data.rating);
+
+        try {
+          const response = await fetch('/api/reviews/submit', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+          });
+
+          const result = await response.json();
+
+          if (result.success) {
+            successMsg.classList.remove('hidden');
+            form.reset();
+            selectedRating = 0;
+            ratingStars.forEach(s => {
+              s.classList.remove('text-amber-400');
+              s.classList.add('text-slate-300');
+            });
+            ratingText.textContent = '';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          } else {
+            errorText.textContent = result.message || 'Failed to submit review. Please try again.';
+            errorMsg.classList.remove('hidden');
+          }
+        } catch (error) {
+          errorText.textContent = 'An error occurred. Please try again later.';
+          errorMsg.classList.remove('hidden');
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Submit Review';
+        }
+      });
+    </script>
+  </body>
+</html>
+
+

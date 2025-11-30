@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { initiateBulkClixPayment, formatPhoneForBulkClix, queryMobileMoneyName } from '@/lib/bulkclix'
+import { initiateBulkClixPayment, formatPhoneForBulkClix, queryMobileMoneyName, generateVoterReference } from '@/lib/bulkclix'
+
+// Mark this route as dynamic
+export const dynamic = 'force-dynamic'
 
 /**
  * API Route to initiate BulkClix payment
@@ -8,7 +11,7 @@ import { initiateBulkClixPayment, formatPhoneForBulkClix, queryMobileMoneyName }
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { amount, account_number, channel, account_name, client_reference } = body
+    const { amount, account_number, channel, account_name, client_reference, reference, election_id } = body
 
     console.log('📥 Payment Initiate Request:', {
       amount,
@@ -45,6 +48,17 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Get callback URL from environment or construct it
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 
+      (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://www.prelyct.com')
+    const callbackUrl = `${siteUrl}/api/payments/bulkclix-webhook`
+
+    // Generate unique voter reference if election_id is provided and reference is not
+    let voterReference = reference
+    if (!voterReference && election_id && client_reference) {
+      voterReference = generateVoterReference(election_id, formattedPhone, client_reference)
+    }
+
     // Initiate payment
     const paymentResponse = await initiateBulkClixPayment({
       amount: String(amount),
@@ -52,6 +66,8 @@ export async function POST(request: NextRequest) {
       channel: channel as 'MTN' | 'Airtel' | 'Vodafone',
       account_name: finalAccountName,
       client_reference: client_reference,
+      reference: voterReference,
+      callback_url: callbackUrl,
     })
 
     if (!paymentResponse.success) {
@@ -78,8 +94,16 @@ export async function POST(request: NextRequest) {
         )
       }
       
+      // Include more details in error for debugging
       return NextResponse.json(
-        { success: false, message: `BulkClix API Error: ${errorMessage}` },
+        { 
+          success: false, 
+          message: errorMessage,
+          debug: {
+            endpoint: '/api/v1/payment-api/momopay',
+            api_url: process.env.NEXT_PUBLIC_BULKCLIX_API_URL || 'https://api.bulkclix.com'
+          }
+        },
         { status: 400 }
       )
     }
@@ -93,7 +117,7 @@ export async function POST(request: NextRequest) {
       success: true,
       transaction_id: paymentResponse.transaction_id,
       client_reference: paymentResponse.client_reference,
-      message: paymentResponse.message,
+      message: paymentResponse.message || 'Payment initiated. Please check your phone for the prompt.',
       data: paymentResponse.data,
     })
   } catch (error: any) {

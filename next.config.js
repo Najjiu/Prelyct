@@ -19,13 +19,9 @@ const nextConfig = {
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
   },
   
-  // Rewrites to hide .html extension from URLs
+  // Rewrites to serve static HTML files
   async rewrites() {
     return [
-      {
-        source: '/index.html',
-        destination: '/',
-      },
       {
         source: '/contact',
         destination: '/contact.html',

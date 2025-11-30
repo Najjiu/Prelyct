@@ -104,6 +104,31 @@
         background: linear-gradient(135deg, #f8fafc 0%, #ffffff 50%, #eff6ff 100%);
         background-attachment: fixed;
       }
+      @keyframes fade-in {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .animate-fade-in {
+        animation: fade-in 0.4s ease-out;
+      }
+      .line-clamp-4 {
+        display: -webkit-box;
+        -webkit-line-clamp: 4;
+        line-clamp: 4;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+      .category-filter-btn.active {
+        background-color: rgb(37 99 235);
+        color: white;
+        border-color: rgb(37 99 235);
+      }
     </style>
   </head>
   <body class="font-sans text-slate-800 antialiased">
@@ -256,6 +281,108 @@
         </div>
       </section>
 
+      <!-- Client Reviews Section -->
+      <section class="border-t border-slate-200 bg-gradient-to-b from-white via-slate-50 to-slate-100 py-16 sm:py-20">
+        <div class="mx-auto max-w-7xl px-6">
+          <div class="text-center mb-12">
+            <p class="text-sm font-semibold uppercase tracking-[0.3em] text-accent">Client Reviews</p>
+            <h2 class="mt-4 text-3xl sm:text-4xl font-bold text-slate-900">What Our Clients Say</h2>
+            <p class="mt-3 text-lg text-slate-600 max-w-2xl mx-auto">
+              Real feedback from clients who have worked with us on projects across Ghana and West Africa
+            </p>
+          </div>
+
+          <!-- Reviews Statistics -->
+          <div id="reviews-stats" class="hidden mb-10">
+            <div class="bg-white/90 backdrop-blur rounded-3xl border border-slate-200/80 p-6 sm:p-8 shadow-[0_18px_45px_rgba(15,23,42,0.08)]">
+              <div class="flex flex-col sm:flex-row items-center justify-between gap-6">
+                <div class="text-center sm:text-left">
+                  <div class="flex items-center justify-center sm:justify-start gap-2 mb-2">
+                    <span id="average-rating" class="text-3xl font-bold text-slate-900">0.0</span>
+                    <div id="average-stars" class="text-amber-400 text-xl">★★★★★</div>
+                  </div>
+                  <p class="text-sm text-slate-600">
+                    <span id="total-reviews">0</span> <span id="total-reviews-text">reviews</span>
+                  </p>
+                </div>
+                <div class="flex-1 max-w-md w-full">
+                  <div class="grid grid-cols-5 gap-2 text-xs text-slate-500">
+                    <div class="text-center">
+                      <div class="text-amber-400 mb-1">★★★★★</div>
+                      <div id="rating-5-count" class="font-semibold text-slate-700">0</div>
+                    </div>
+                    <div class="text-center">
+                      <div class="text-amber-400 mb-1">★★★★☆</div>
+                      <div id="rating-4-count" class="font-semibold text-slate-700">0</div>
+                    </div>
+                    <div class="text-center">
+                      <div class="text-amber-400 mb-1">★★★☆☆</div>
+                      <div id="rating-3-count" class="font-semibold text-slate-700">0</div>
+                    </div>
+                    <div class="text-center">
+                      <div class="text-amber-400 mb-1">★★☆☆☆</div>
+                      <div id="rating-2-count" class="font-semibold text-slate-700">0</div>
+                    </div>
+                    <div class="text-center">
+                      <div class="text-amber-400 mb-1">★☆☆☆☆</div>
+                      <div id="rating-1-count" class="font-semibold text-slate-700">0</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Category Filters -->
+          <div id="category-filters" class="hidden mb-8 flex flex-wrap gap-3 justify-center">
+            <button onclick="filterReviews('all')" class="category-filter-btn active px-4 py-2 rounded-full text-sm font-semibold border border-slate-200 bg-white shadow-sm text-slate-800 transition hover:border-accent hover:text-accent hover:shadow-md" data-category="all">
+              All Reviews
+            </button>
+            <button onclick="filterReviews('voting')" class="category-filter-btn px-4 py-2 rounded-full text-sm font-semibold border border-slate-200 bg-white/80 text-slate-700 transition hover:border-accent hover:text-accent hover:shadow-md" data-category="voting">
+              Voting Systems
+            </button>
+            <button onclick="filterReviews('hostel')" class="category-filter-btn px-4 py-2 rounded-full text-sm font-semibold border border-slate-200 bg-white/80 text-slate-700 transition hover:border-accent hover:text-accent hover:shadow-md" data-category="hostel">
+              Hostel Management
+            </button>
+            <button onclick="filterReviews('web-development')" class="category-filter-btn px-4 py-2 rounded-full text-sm font-semibold border border-slate-200 bg-white/80 text-slate-700 transition hover:border-accent hover:text-accent hover:shadow-md" data-category="web-development">
+              Web Development
+            </button>
+            <button onclick="filterReviews('graphic-design')" class="category-filter-btn px-4 py-2 rounded-full text-sm font-semibold border border-slate-200 bg-white/80 text-slate-700 transition hover:border-accent hover:text-accent hover:shadow-md" data-category="graphic-design">
+              Graphic Design
+            </button>
+            <button onclick="filterReviews('ms-suite')" class="category-filter-btn px-4 py-2 rounded-full text-sm font-semibold border border-slate-200 bg-white/80 text-slate-700 transition hover:border-accent hover:text-accent hover:shadow-md" data-category="ms-suite">
+              MS Suite
+            </button>
+          </div>
+
+          <!-- Reviews Grid -->
+          <div id="reviews-container" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <!-- Reviews will be loaded here -->
+          </div>
+
+          <!-- Load More Button (if needed) -->
+          <div id="load-more-container" class="hidden text-center mt-10">
+            <button onclick="loadMoreReviews()" id="load-more-btn" class="inline-flex items-center gap-2 rounded-full border border-slate-300 px-6 py-3 text-sm font-semibold text-slate-700 transition hover:border-accent hover:text-accent hover:shadow-md">
+              Load More Reviews
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+          </div>
+
+          <!-- Add Review Button (shown only when reviews exist) -->
+          <div id="add-review-button-container" class="hidden text-center mt-12">
+            <button type="button" onclick="openReviewModal(event)" class="inline-flex items-center gap-2 rounded-full bg-accent px-6 py-3 text-sm font-semibold text-white transition hover:bg-accentSoft shadow-lg shadow-accent/30 hover:shadow-xl hover:shadow-accent/40">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+              </svg>
+              Share Your Experience
+            </button>
+            <p class="text-xs text-slate-500 mt-3">Help others discover Prelyct's services</p>
+          </div>
+        </div>
+      </section>
+
       <section class="border-t border-slate-200 bg-slate-50 py-16">
         <div class="mx-auto max-w-6xl px-6">
           <div class="rounded-4xl border border-slate-200 bg-white px-8 py-12 shadow-xl">
@@ -278,6 +405,151 @@
         </div>
       </section>
     </main>
+
+    <!-- Review Modal -->
+    <div id="review-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onclick="closeReviewModal(event)">
+      <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
+        <div class="sticky top-0 bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between z-10">
+          <h2 class="text-xl font-bold text-slate-900">Add Your Review</h2>
+          <button onclick="closeReviewModal()" class="text-slate-400 hover:text-slate-600 transition">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        
+        <div class="p-6">
+          <div id="review-success-message" class="hidden mb-6 p-4 rounded-xl bg-green-50 border-2 border-green-300">
+            <div class="flex items-start gap-3">
+              <svg class="w-6 h-6 text-green-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+              </svg>
+              <div class="flex-1">
+                <p class="font-semibold text-green-900">Review Submitted Successfully!</p>
+                <p class="text-sm text-green-700 mt-1">Thank you for your feedback. Your review has been published. Closing automatically in 2 seconds...</p>
+              </div>
+              <button id="success-close-btn" onclick="closeReviewModal()" class="text-green-600 hover:text-green-800 transition flex-shrink-0" aria-label="Close">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <div id="review-error-message" class="hidden mb-6 p-4 rounded-xl bg-red-50 border-2 border-red-300">
+            <div class="flex items-center gap-3">
+              <svg class="w-6 h-6 text-red-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+              <div>
+                <p class="font-semibold text-red-900">Error</p>
+                <p id="review-error-text" class="text-sm text-red-700 mt-1"></p>
+              </div>
+            </div>
+          </div>
+
+          <form id="review-modal-form" class="space-y-6">
+            <div class="space-y-5">
+              <div>
+                <label for="modal_client_name" class="block text-sm font-medium text-slate-700 mb-2">
+                  Your Name <span class="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="modal_client_name"
+                  name="client_name"
+                  required
+                  class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
+                  placeholder="John Doe"
+                />
+              </div>
+
+              <div>
+                <label for="modal_client_company" class="block text-sm font-medium text-slate-700 mb-2">
+                  Company/Organization
+                </label>
+                <input
+                  type="text"
+                  id="modal_client_company"
+                  name="client_company"
+                  class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
+                  placeholder="University of Ghana"
+                />
+              </div>
+
+              <div>
+                <label for="modal_project_category" class="block text-sm font-medium text-slate-700 mb-2">
+                  Project Category <span class="text-red-500">*</span>
+                </label>
+                <select
+                  id="modal_project_category"
+                  name="project_category"
+                  required
+                  class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
+                >
+                  <option value="">Select a category</option>
+                  <option value="voting">Voting Systems</option>
+                  <option value="hostel">Hostel Management</option>
+                  <option value="web-development">Web & App Development</option>
+                  <option value="graphic-design">Graphic Design & Branding</option>
+                  <option value="ms-suite">Microsoft Office Services</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-slate-700 mb-2">
+                  Rating <span class="text-red-500">*</span>
+                </label>
+                <div class="flex items-center gap-2">
+                  <div id="modal-rating-stars" class="flex gap-1">
+                    <button type="button" data-rating="1" class="modal-rating-star text-2xl text-slate-300 hover:text-amber-400 transition cursor-pointer">★</button>
+                    <button type="button" data-rating="2" class="modal-rating-star text-2xl text-slate-300 hover:text-amber-400 transition cursor-pointer">★</button>
+                    <button type="button" data-rating="3" class="modal-rating-star text-2xl text-slate-300 hover:text-amber-400 transition cursor-pointer">★</button>
+                    <button type="button" data-rating="4" class="modal-rating-star text-2xl text-slate-300 hover:text-amber-400 transition cursor-pointer">★</button>
+                    <button type="button" data-rating="5" class="modal-rating-star text-2xl text-slate-300 hover:text-amber-400 transition cursor-pointer">★</button>
+                  </div>
+                  <input type="hidden" id="modal-rating" name="rating" required />
+                  <span id="modal-rating-text" class="text-sm text-slate-600"></span>
+                </div>
+              </div>
+
+              <div>
+                <label for="modal_review_text" class="block text-sm font-medium text-slate-700 mb-2">
+                  Your Review <span class="text-red-500">*</span>
+                </label>
+                <textarea
+                  id="modal_review_text"
+                  name="review_text"
+                  required
+                  rows="5"
+                  class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
+                  placeholder="Share your experience working with Prelyct..."
+                ></textarea>
+              </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="flex gap-3 pt-4 border-t border-slate-200">
+              <button
+                type="button"
+                onclick="closeReviewModal()"
+                class="flex-1 px-6 py-3 border border-slate-300 rounded-full text-sm font-semibold text-slate-700 hover:bg-slate-50 transition"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                id="modal-submit-btn"
+                class="flex-1 px-6 py-3 bg-accent text-white font-semibold rounded-full hover:bg-accentSoft transition shadow-lg shadow-accent/30 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Submit Review
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
 
     <footer class="border-t border-slate-200 bg-white py-10">
       <div class="mx-auto grid max-w-6xl gap-8 px-6 md:grid-cols-2">
@@ -306,6 +578,7 @@
             <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Company</p>
             <a href="/about" class="mt-3 block hover:text-accent">About</a>
             <a href="/our-work" class="mt-2 block hover:text-accent">Our Work</a>
+            <a href="/add-review" class="mt-2 block hover:text-accent">Add Review</a>
             <a href="/contact" class="mt-2 block hover:text-accent">Contact</a>
           </div>
           <div>
@@ -328,6 +601,997 @@
       });
       const yearEl = document.getElementById('year');
       if (yearEl) yearEl.textContent = new Date().getFullYear();
+
+      // Global reviews data
+      let allReviews = [];
+      let displayedReviews = [];
+      let currentFilter = 'all';
+      let reviewsToShow = 9; // Show 9 reviews initially
+      let isLoading = false;
+
+      // Load and display reviews
+      async function loadReviews() {
+        if (isLoading) return;
+        isLoading = true;
+
+        try {
+          // Use absolute URL to ensure API route is accessible
+          const apiUrl = window.location.origin + '/api/reviews/get';
+          console.log('Loading reviews from:', apiUrl);
+          const response = await fetch(apiUrl);
+          console.log('📥 Reviews API response status:', response.status);
+          
+          const result = await response.json();
+          console.log('📦 Reviews API result:', result);
+          console.log('📊 Reviews count:', result.reviews?.length || 0);
+          
+          if (result.success) {
+            const reviews = result.reviews || [];
+            console.log(`✅ Loaded ${reviews.length} reviews from API`);
+            
+            if (reviews.length > 0) {
+              allReviews = reviews;
+              displayedReviews = reviews;
+              
+              // Show statistics
+              updateReviewStatistics(allReviews);
+              showCategoryFilters(allReviews);
+              
+              // Show the bottom "Share Your Experience" button since we have reviews
+              const addReviewBtnContainer = document.getElementById('add-review-button-container');
+              if (addReviewBtnContainer) {
+                addReviewBtnContainer.classList.remove('hidden');
+              }
+              
+              // Display filtered reviews
+              applyFilter();
+            } else {
+              console.log('⚠️ No reviews found, showing empty state');
+              showEmptyState();
+            }
+          } else {
+            console.error('❌ Failed to load reviews:', result.message);
+            showEmptyState();
+          }
+        } catch (error) {
+          console.error('❌ Error loading reviews:', error);
+          console.error('Error details:', error);
+          document.getElementById('reviews-container').innerHTML = `
+            <div class="col-span-full text-center py-12">
+              <p class="text-slate-500">Unable to load reviews at this time. Please try again later.</p>
+              <p class="text-xs text-slate-400 mt-2">Check browser console for details</p>
+            </div>
+          `;
+          // Show empty state on error
+          showEmptyState();
+        } finally {
+          isLoading = false;
+        }
+      }
+
+      function showEmptyState() {
+        document.getElementById('reviews-stats').classList.add('hidden');
+        document.getElementById('category-filters').classList.add('hidden');
+        // Hide the bottom "Share Your Experience" button when showing empty state
+        const addReviewBtnContainer = document.getElementById('add-review-button-container');
+        if (addReviewBtnContainer) {
+          addReviewBtnContainer.classList.add('hidden');
+        }
+        document.getElementById('reviews-container').innerHTML = `
+          <div class="col-span-full text-center py-16">
+            <div class="max-w-md mx-auto">
+              <div class="w-20 h-20 mx-auto mb-6 rounded-full bg-accent/10 flex items-center justify-center">
+                <svg class="w-10 h-10 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                </svg>
+              </div>
+              <h3 class="text-xl font-bold text-slate-900 mb-2">No reviews yet</h3>
+              <p class="text-slate-600 mb-6">Be the first to share your experience working with Prelyct!</p>
+              <button type="button" onclick="openReviewModal(event)" class="inline-flex items-center gap-2 rounded-full bg-accent px-6 py-3 text-sm font-semibold text-white transition hover:bg-accentSoft shadow-lg shadow-accent/30">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                Share Your Experience
+              </button>
+            </div>
+          </div>
+        `;
+      }
+
+      function updateReviewStatistics(reviews) {
+        if (!reviews || reviews.length === 0) {
+          document.getElementById('reviews-stats').classList.add('hidden');
+          return;
+        }
+
+        // Calculate average rating
+        const totalRating = reviews.reduce((sum, r) => sum + r.rating, 0);
+        const averageRating = (totalRating / reviews.length).toFixed(1);
+        
+        // Count ratings
+        const ratingCounts = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+        reviews.forEach(r => {
+          ratingCounts[r.rating] = (ratingCounts[r.rating] || 0) + 1;
+        });
+
+        // Update UI
+        document.getElementById('average-rating').textContent = averageRating;
+        document.getElementById('total-reviews').textContent = reviews.length;
+        document.getElementById('total-reviews-text').textContent = reviews.length === 1 ? 'review' : 'reviews';
+        
+        // Update rating counts
+        for (let i = 1; i <= 5; i++) {
+          document.getElementById(`rating-${i}-count`).textContent = ratingCounts[i] || 0;
+        }
+
+        // Update average stars display
+        const fullStars = Math.floor(averageRating);
+        const hasHalfStar = (averageRating % 1) >= 0.5;
+        let starsDisplay = '★'.repeat(fullStars);
+        if (hasHalfStar) starsDisplay += '☆';
+        starsDisplay += '☆'.repeat(5 - fullStars - (hasHalfStar ? 1 : 0));
+        document.getElementById('average-stars').textContent = starsDisplay;
+
+        document.getElementById('reviews-stats').classList.remove('hidden');
+      }
+
+      function showCategoryFilters(reviews) {
+        if (!reviews || reviews.length === 0) {
+          document.getElementById('category-filters').classList.add('hidden');
+          return;
+        }
+
+        // Check if we have multiple categories
+        const categories = [...new Set(reviews.map(r => r.project_category))];
+        if (categories.length > 1) {
+          document.getElementById('category-filters').classList.remove('hidden');
+        }
+      }
+
+      function filterReviews(category) {
+        currentFilter = category;
+        
+        // Update filter button states
+        document.querySelectorAll('.category-filter-btn').forEach(btn => {
+          if (btn.dataset.category === category) {
+            btn.classList.add('active', 'bg-accent', 'text-white', 'border-accent');
+            btn.classList.remove('bg-white', 'text-slate-700', 'border-slate-300');
+          } else {
+            btn.classList.remove('active', 'bg-accent', 'text-white', 'border-accent');
+            btn.classList.add('bg-white', 'text-slate-700', 'border-slate-300');
+          }
+        });
+
+        // Filter reviews
+        if (category === 'all') {
+          displayedReviews = allReviews;
+        } else {
+          displayedReviews = allReviews.filter(r => r.project_category === category);
+        }
+
+        // Reset display count
+        reviewsToShow = 9;
+        applyFilter();
+      }
+
+      function applyFilter() {
+        const reviewsToDisplay = displayedReviews.slice(0, reviewsToShow);
+        displayReviews(reviewsToDisplay);
+        
+        // Show/hide load more button
+        const loadMoreContainer = document.getElementById('load-more-container');
+        if (displayedReviews.length > reviewsToShow) {
+          loadMoreContainer.classList.remove('hidden');
+        } else {
+          loadMoreContainer.classList.add('hidden');
+        }
+      }
+
+      function loadMoreReviews() {
+        reviewsToShow += 9;
+        applyFilter();
+      }
+
+      function displayReviews(reviews) {
+        const container = document.getElementById('reviews-container');
+        if (!container) return;
+
+        const categoryLabels = {
+          'voting': 'Voting Systems',
+          'hostel': 'Hostel Management',
+          'web-development': 'Web Development',
+          'graphic-design': 'Graphic Design',
+          'ms-suite': 'MS Suite Services',
+          'other': 'Other'
+        };
+
+        if (!reviews || reviews.length === 0) {
+          container.innerHTML = `
+            <div class="col-span-full text-center py-12">
+              <p class="text-slate-500">No reviews found for this category.</p>
+            </div>
+          `;
+          return;
+        }
+
+        // Show the bottom "Share Your Experience" button when displaying reviews
+        const addReviewBtnContainer = document.getElementById('add-review-button-container');
+        if (addReviewBtnContainer && reviews && reviews.length > 0) {
+          addReviewBtnContainer.classList.remove('hidden');
+        }
+        
+        container.innerHTML = reviews.map((review, index) => {
+          const stars = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
+          const category = categoryLabels[review.project_category] || review.project_category;
+          const date = new Date(review.created_at).toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'short', 
+            day: 'numeric' 
+          });
+          
+          // Format date to be more concise
+          const now = new Date();
+          const reviewDate = new Date(review.created_at);
+          const daysAgo = Math.floor((now - reviewDate) / (1000 * 60 * 60 * 24));
+          let dateDisplay = date;
+          if (daysAgo === 0) dateDisplay = 'Today';
+          else if (daysAgo === 1) dateDisplay = 'Yesterday';
+          else if (daysAgo < 7) dateDisplay = `${daysAgo} days ago`;
+          else if (daysAgo < 30) dateDisplay = `${Math.floor(daysAgo / 7)} weeks ago`;
+          else if (daysAgo < 365) dateDisplay = `${Math.floor(daysAgo / 30)} months ago`;
+
+          const reviewId = `review-${review.id || index}`;
+          const isLongReview = review.review_text && review.review_text.length > 200;
+
+          return `
+            <article class="review-card rounded-2xl border border-slate-200 bg-white p-6 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1" style="animation-delay: ${index * 0.05}s">
+              <div class="flex items-start justify-between mb-4">
+                <div class="flex-1 min-w-0">
+                  <h3 class="font-semibold text-slate-900 truncate">${escapeHtml(review.client_name)}</h3>
+                  ${review.client_company ? `
+                    <p class="text-sm text-slate-600 mt-1 truncate">${escapeHtml(review.client_company)}</p>
+                  ` : ''}
+                </div>
+                <div class="w-12 h-12 rounded-full bg-gradient-to-br from-accent/20 to-accent/10 flex items-center justify-center ml-4 flex-shrink-0">
+                  <span class="text-lg font-semibold text-accent">${escapeHtml(review.client_name.charAt(0).toUpperCase())}</span>
+                </div>
+              </div>
+              
+              <div class="mb-4">
+                <div class="flex items-center gap-2 mb-2">
+                  <div class="text-amber-400 text-lg">${stars}</div>
+                  <span class="text-xs font-semibold text-slate-700">${review.rating}.0</span>
+                </div>
+                <div class="flex items-center gap-2 text-xs text-slate-500">
+                  <span class="px-2 py-1 rounded-full bg-slate-100 text-slate-700 font-medium">${category}</span>
+                  <span>·</span>
+                  <span>${dateDisplay}</span>
+                </div>
+              </div>
+
+
+              <div class="review-text-container">
+                <p id="${reviewId}-text" class="text-sm text-slate-700 leading-relaxed ${isLongReview ? 'line-clamp-4' : ''}">
+                  ${escapeHtml(review.review_text)}
+                </p>
+                ${isLongReview ? `
+                  <button onclick="toggleReviewText('${reviewId}')" class="mt-2 text-xs font-semibold text-accent hover:text-accentSoft transition">
+                    <span id="${reviewId}-toggle">Read more</span>
+                  </button>
+                ` : ''}
+              </div>
+            </article>
+          `;
+        }).join('');
+
+        // Add staggered animation
+        container.querySelectorAll('.review-card').forEach((card, index) => {
+          card.style.opacity = '0';
+          card.style.transform = 'translateY(20px)';
+          setTimeout(() => {
+            card.style.transition = 'opacity 0.4s ease-out, transform 0.4s ease-out';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+          }, index * 50);
+        });
+      }
+
+      function toggleReviewText(reviewId) {
+        const textEl = document.getElementById(`${reviewId}-text`);
+        const toggleEl = document.getElementById(`${reviewId}-toggle`);
+        
+        if (textEl.classList.contains('line-clamp-4')) {
+          textEl.classList.remove('line-clamp-4');
+          toggleEl.textContent = 'Read less';
+        } else {
+          textEl.classList.add('line-clamp-4');
+          toggleEl.textContent = 'Read more';
+        }
+      }
+
+      function escapeHtml(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+      }
+
+      // Helpers to track which reviews were created from this browser
+      function getMyReviewIds() {
+        try {
+          const raw = localStorage.getItem('prelyct_my_reviews');
+          if (!raw) return [];
+          const parsed = JSON.parse(raw);
+          return Array.isArray(parsed) ? parsed : [];
+        } catch (error) {
+          console.warn('Failed to read stored review IDs:', error);
+          return [];
+        }
+      }
+
+      function saveMyReviewIds(ids) {
+        try {
+          localStorage.setItem('prelyct_my_reviews', JSON.stringify(ids));
+        } catch (error) {
+          console.warn('Failed to save review IDs:', error);
+        }
+      }
+
+      function addMyReviewId(id) {
+        if (!id) return;
+        const ids = getMyReviewIds();
+        if (!ids.includes(id)) {
+          ids.push(id);
+          saveMyReviewIds(ids);
+        }
+      }
+
+      function isOwnReview(id) {
+        if (!id) return false;
+        const ids = getMyReviewIds();
+        return ids.includes(id);
+      }
+
+      // Add a single review to the top of the reviews container
+      function addReviewToContainer(review) {
+        const container = document.getElementById('reviews-container');
+        if (!container) return;
+
+        const categoryLabels = {
+          'voting': 'Voting Systems',
+          'hostel': 'Hostel Management',
+          'web-development': 'Web Development',
+          'graphic-design': 'Graphic Design',
+          'ms-suite': 'MS Suite Services',
+          'other': 'Other'
+        };
+
+        const stars = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
+        const category = categoryLabels[review.project_category] || review.project_category;
+        const date = new Date(review.created_at || new Date()).toLocaleDateString('en-US', { 
+          year: 'numeric', 
+          month: 'short', 
+          day: 'numeric' 
+        });
+        
+        // Format date to be more concise
+        const now = new Date();
+        const reviewDate = new Date(review.created_at || new Date());
+        const daysAgo = Math.floor((now - reviewDate) / (1000 * 60 * 60 * 24));
+        let dateDisplay = 'Today';
+        if (daysAgo === 1) dateDisplay = 'Yesterday';
+        else if (daysAgo < 7) dateDisplay = `${daysAgo} days ago`;
+        else if (daysAgo < 30) dateDisplay = `${Math.floor(daysAgo / 7)} weeks ago`;
+        else if (daysAgo < 365) dateDisplay = `${Math.floor(daysAgo / 30)} months ago`;
+        else dateDisplay = date;
+
+        const reviewHTML = `
+          <article class="review-card relative rounded-3xl border border-slate-200/80 bg-white/90 backdrop-blur-sm p-6 sm:p-7 shadow-[0_18px_45px_rgba(15,23,42,0.08)] hover:shadow-[0_22px_60px_rgba(15,23,42,0.16)] transition-all duration-300 hover:-translate-y-1 animate-fade-in" data-review-id="${review.id}">
+            <div class="flex items-start justify-between mb-4">
+              <div class="flex-1 min-w-0">
+                <h3 class="text-base sm:text-lg font-semibold text-slate-900 truncate">${escapeHtml(review.client_name)}</h3>
+                ${review.client_company ? `
+                  <p class="text-xs sm:text-sm text-slate-600 mt-1 truncate">${escapeHtml(review.client_company)}</p>
+                ` : ''}
+              </div>
+              <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-accent/20 to-accent/10 flex items-center justify-center ml-4 flex-shrink-0">
+                <span class="text-base sm:text-lg font-semibold text-accent">${escapeHtml(review.client_name.charAt(0).toUpperCase())}</span>
+              </div>
+            </div>
+            
+            <div class="mb-4">
+              <div class="flex items-center gap-2 mb-2">
+                <div class="text-amber-400 text-lg leading-none">${stars}</div>
+                <span class="text-xs font-semibold text-slate-700">${review.rating}.0</span>
+              </div>
+              <div class="flex items-center gap-2 text-xs text-slate-500">
+                <span class="px-2 py-1 rounded-full bg-slate-100/90 text-slate-700 font-medium text-[11px] uppercase tracking-wide">${category}</span>
+                <span>·</span>
+                <span>${dateDisplay}</span>
+              </div>
+            </div>
+
+            ${review.project_name ? `
+              <div class="mb-3 pb-3 border-b border-slate-100">
+                <p class="text-sm font-semibold text-slate-900">${escapeHtml(review.project_name)}</p>
+              </div>
+            ` : ''}
+
+            <p class="text-[15px] sm:text-[15px] text-slate-700 leading-relaxed">
+              “${escapeHtml(review.review_text)}”
+            </p>
+
+            ${isOwnReview(review.id) ? `
+              <button
+                type="button"
+                onclick="deleteReview('${review.id}')"
+                class="mt-4 inline-flex items-center gap-1 text-xs font-semibold text-red-600 hover:text-red-700"
+              >
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7h6m-7 0h8m-5-3h2a1 1 0 011 1v1H8V5a1 1 0 011-1h2z" />
+                </svg>
+                <span>Delete review</span>
+              </button>
+            ` : ''}
+          </article>
+        `;
+
+        // If container is empty or shows "no reviews" message, replace content
+        if (container.children.length === 0 || container.querySelector('.col-span-full')) {
+          container.innerHTML = reviewHTML;
+        } else {
+          // Otherwise, add to the top
+          container.insertAdjacentHTML('afterbegin', reviewHTML);
+        }
+
+        // Scroll to reviews section
+        const reviewsSection = document.querySelector('#reviews-container')?.closest('section');
+        if (reviewsSection) {
+          reviewsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }
+
+      // Load reviews on page load
+      // Wait for DOM to be fully ready
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+          console.log('📄 DOM loaded, loading reviews...');
+          loadReviews();
+        });
+      } else {
+        console.log('📄 DOM already ready, loading reviews...');
+        loadReviews();
+      }
+
+      // Review Modal Functions
+
+      async function deleteReview(reviewId) {
+        if (!reviewId) return;
+
+        const confirmed = window.confirm('Are you sure you want to delete this review?');
+        if (!confirmed) return;
+
+        try {
+          const apiUrl = window.location.origin + '/api/reviews/delete';
+          console.log('🗑️ Sending delete request for review:', reviewId, '→', apiUrl);
+
+          const response = await fetch(apiUrl, {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ id: reviewId }),
+          });
+
+          if (!response.ok) {
+            console.error('❌ Failed to delete review. Status:', response.status);
+            const errorText = await response.text().catch(() => '');
+            console.error('Response text:', errorText);
+            alert('Failed to delete review. Please try again.');
+            return;
+          }
+
+          const result = await response.json().catch(() => ({}));
+          if (!result.success) {
+            console.error('❌ Delete API returned error:', result);
+            alert(result.message || 'Failed to delete review. Please try again.');
+            return;
+          }
+
+          console.log('✅ Review deleted successfully on server. Updating UI...');
+
+          // Remove from DOM
+          const card = document.querySelector(`[data-review-id="${reviewId}"]`);
+          if (card && card.parentElement) {
+            card.parentElement.removeChild(card);
+          }
+
+          // Remove from local arrays
+          if (Array.isArray(allReviews)) {
+            allReviews = allReviews.filter(r => r.id !== reviewId);
+          }
+          if (Array.isArray(displayedReviews)) {
+            displayedReviews = displayedReviews.filter(r => r.id !== reviewId);
+          }
+
+          // Update statistics and filters
+          updateReviewStatistics(allReviews || []);
+          showCategoryFilters(allReviews || []);
+
+          if (!allReviews || allReviews.length === 0) {
+            showEmptyState();
+          }
+
+          // Remove from "my reviews" tracking
+          const currentIds = getMyReviewIds().filter(id => id !== reviewId);
+          saveMyReviewIds(currentIds);
+        } catch (error) {
+          console.error('❌ Error deleting review:', error);
+          alert('An error occurred while deleting the review. Please try again.');
+        }
+      }
+
+      function openReviewModal(event) {
+        // Prevent event bubbling
+        if (event) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        
+        const modal = document.getElementById('review-modal');
+        if (!modal) {
+          console.error('Review modal element not found!');
+          return;
+        }
+        
+        // Show modal
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        document.body.style.overflow = 'hidden';
+        
+        // Initialize rating stars
+        setTimeout(() => {
+          initializeRatingStars();
+        }, 100);
+        
+        // Reset form
+        const form = document.getElementById('review-modal-form');
+        if (form) form.reset();
+        
+        const successMsg = document.getElementById('review-success-message');
+        const errorMsg = document.getElementById('review-error-message');
+        if (successMsg) successMsg.classList.add('hidden');
+        if (errorMsg) errorMsg.classList.add('hidden');
+        
+        // Reset rating
+        modalSelectedRating = 0;
+        const modalStars = document.querySelectorAll('.modal-rating-star');
+        modalStars.forEach(s => {
+          s.classList.remove('text-amber-400');
+          s.classList.add('text-slate-300');
+        });
+        const ratingText = document.getElementById('modal-rating-text');
+        if (ratingText) ratingText.textContent = '';
+      }
+
+      function closeReviewModal(event) {
+        // If event is provided and we clicked inside the modal content, don't close
+        if (event && event.target.closest('.bg-white.rounded-2xl')) {
+          return;
+        }
+        const modal = document.getElementById('review-modal');
+        if (modal) {
+          modal.classList.add('hidden');
+          modal.classList.remove('flex');
+          document.body.style.overflow = '';
+          document.body.style.overflowX = '';
+          document.body.style.overflowY = '';
+        }
+      }
+
+      // Modal Rating Stars - Initialize when modal opens
+      let modalSelectedRating = 0;
+      
+      function initializeRatingStars() {
+        const modalRatingStars = document.querySelectorAll('.modal-rating-star');
+        const modalRatingInput = document.getElementById('modal-rating');
+        const modalRatingText = document.getElementById('modal-rating-text');
+        const ratingStarsContainer = document.getElementById('modal-rating-stars');
+
+        if (!ratingStarsContainer || modalRatingStars.length === 0) return;
+
+        modalRatingStars.forEach((star, index) => {
+          // Remove existing listeners by cloning
+          const newStar = star.cloneNode(true);
+          star.parentNode.replaceChild(newStar, star);
+          
+          newStar.addEventListener('click', () => {
+            modalSelectedRating = index + 1;
+            if (modalRatingInput) modalRatingInput.value = modalSelectedRating;
+            
+            document.querySelectorAll('.modal-rating-star').forEach((s, i) => {
+              if (i < modalSelectedRating) {
+                s.classList.remove('text-slate-300');
+                s.classList.add('text-amber-400');
+              } else {
+                s.classList.remove('text-amber-400');
+                s.classList.add('text-slate-300');
+              }
+            });
+
+            const ratingLabels = ['', 'Poor', 'Fair', 'Good', 'Very Good', 'Excellent'];
+            if (modalRatingText) modalRatingText.textContent = ratingLabels[modalSelectedRating];
+          });
+
+          newStar.addEventListener('mouseenter', () => {
+            const hoverRating = index + 1;
+            document.querySelectorAll('.modal-rating-star').forEach((s, i) => {
+              if (i < hoverRating) {
+                s.classList.remove('text-slate-300');
+                s.classList.add('text-amber-400');
+              }
+            });
+          });
+        });
+
+        if (ratingStarsContainer) {
+          ratingStarsContainer.addEventListener('mouseleave', () => {
+            document.querySelectorAll('.modal-rating-star').forEach((s, i) => {
+              if (i < modalSelectedRating) {
+                s.classList.remove('text-slate-300');
+                s.classList.add('text-amber-400');
+              } else {
+                s.classList.remove('text-amber-400');
+                s.classList.add('text-slate-300');
+              }
+            });
+          });
+        }
+      }
+
+      // Modal Form Submission - Use event delegation on document
+      document.addEventListener('submit', async (e) => {
+        const form = e.target;
+        if (form && form.id === 'review-modal-form') {
+          e.preventDefault();
+          const submitBtn = document.getElementById('modal-submit-btn');
+          const successMsg = document.getElementById('review-success-message');
+          const errorMsg = document.getElementById('review-error-message');
+          const errorText = document.getElementById('review-error-text');
+
+          if (!form || !submitBtn || !successMsg || !errorMsg || !errorText) {
+            console.error('Form elements not found');
+            alert('Error: Form elements not found. Please refresh the page.');
+            return;
+          }
+
+          // Hide previous messages
+          successMsg.classList.add('hidden');
+          errorMsg.classList.add('hidden');
+
+          // Validate rating
+          const ratingInput = document.getElementById('modal-rating');
+          const currentRating = ratingInput ? parseInt(ratingInput.value) : modalSelectedRating;
+          
+          if (!currentRating || currentRating < 1 || currentRating > 5) {
+            errorText.textContent = 'Please select a rating';
+            errorMsg.classList.remove('hidden');
+            return;
+          }
+
+          // Get form data
+          const formData = new FormData(form);
+          const data = {
+            client_name: formData.get('client_name') || '',
+            client_company: formData.get('client_company') || '',
+            project_category: formData.get('project_category') || '',
+            rating: currentRating,
+            review_text: formData.get('review_text') || '',
+          };
+
+          // Validate required fields
+          if (!data.client_name || !data.project_category || !data.rating || !data.review_text) {
+            errorText.textContent = 'Please fill in all required fields';
+            errorMsg.classList.remove('hidden');
+            return;
+          }
+
+          // Disable submit button
+          submitBtn.disabled = true;
+          submitBtn.textContent = 'Submitting...';
+
+          try {
+            console.log('Submitting review:', data);
+            
+            // Use absolute URL to ensure API route is accessible
+            const apiUrl = window.location.origin + '/api/reviews/submit';
+            console.log('Fetching from:', apiUrl);
+            console.log('Current origin:', window.location.origin);
+            console.log('Full URL:', apiUrl);
+            
+            // Test if server is reachable first
+            try {
+              const testResponse = await fetch(window.location.origin + '/api/reviews/check-table', {
+                method: 'GET',
+                signal: AbortSignal.timeout(5000), // 5 second timeout
+              });
+              console.log('Server is reachable, status:', testResponse.status);
+            } catch (testError) {
+              console.error('Server connection test failed:', testError);
+              throw {
+                type: 'network_error',
+                message: '❌ Cannot connect to server!\n\n' +
+                  'Your Next.js development server is not running or not accessible.\n\n' +
+                  'To fix:\n' +
+                  '1. Open your terminal\n' +
+                  '2. Navigate to project folder\n' +
+                  '3. Run: npm run dev\n' +
+                  '4. Wait for "Ready" message\n' +
+                  '5. Try submitting again',
+                originalError: testError.message || String(testError),
+              };
+            }
+            
+            let response;
+            try {
+              response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+                signal: AbortSignal.timeout(30000), // 30 second timeout
+              });
+            } catch (fetchError) {
+              console.error('Fetch error details:', fetchError);
+              console.error('Error name:', fetchError.name);
+              console.error('Error message:', fetchError.message);
+              
+              if (fetchError.name === 'AbortError' || fetchError.message?.includes('timeout')) {
+                throw {
+                  type: 'timeout_error',
+                  message: '❌ Request timed out.\n\nThe server took too long to respond. Please try again.',
+                };
+              }
+              
+              throw {
+                type: 'network_error',
+                message: '❌ Connection Error!\n\n' +
+                  'Failed to connect to the server.\n\n' +
+                  'Make sure:\n' +
+                  '1. Your Next.js server is running (npm run dev)\n' +
+                  '2. Check the server console for errors\n' +
+                  '3. Try refreshing the page\n' +
+                  '4. Check your internet connection',
+                originalError: fetchError.message || String(fetchError),
+              };
+            }
+
+            console.log('Response status:', response.status);
+            console.log('Response ok:', response.ok);
+
+            if (!response.ok) {
+              let result;
+              try {
+                result = await response.json();
+              } catch (e) {
+                result = { message: `HTTP error! status: ${response.status}` };
+              }
+              
+              console.error('API error response:', result);
+              
+              // Response has error details
+              throw {
+                status: response.status,
+                message: result.message || `HTTP error! status: ${response.status}`,
+                error: result.error || null,
+                result: result
+              };
+            }
+
+            const result = await response.json();
+            console.log('Review submission result:', result);
+
+            if (result.success) {
+              successMsg.classList.remove('hidden');
+              
+              // Add the new review to allReviews array immediately
+              if (result.review) {
+                console.log('✅ Review submitted successfully:', result.review);
+                console.log('Review data:', {
+                  id: result.review.id,
+                  client_name: result.review.client_name,
+                  status: result.review.status,
+                  project_category: result.review.project_category,
+                });
+                
+                // Track this review as created from this browser so we can allow deletion
+                if (result.review.id) {
+                  addMyReviewId(result.review.id);
+                }
+                
+                // Ensure the review has status='approved' for consistency
+                if (!result.review.status) {
+                  result.review.status = 'approved';
+                }
+                
+                allReviews.unshift(result.review); // Add to beginning
+                displayedReviews = currentFilter === 'all' 
+                  ? allReviews 
+                  : allReviews.filter(r => r.project_category === currentFilter);
+                
+                // Update statistics
+                updateReviewStatistics(allReviews);
+                showCategoryFilters(allReviews);
+                
+                // Show the bottom "Share Your Experience" button since we now have reviews
+                const addReviewBtnContainer = document.getElementById('add-review-button-container');
+                if (addReviewBtnContainer) {
+                  addReviewBtnContainer.classList.remove('hidden');
+                }
+                
+                // Add to container with animation
+                addReviewToContainer(result.review);
+                
+                // Force a full reload after a delay to ensure database consistency
+                // This ensures the review is visible even if there's a delay in database replication
+                setTimeout(() => {
+                  console.log('🔄 Force reloading all reviews from database...');
+                  loadReviews();
+                }, 2000);
+              } else {
+                console.warn('⚠️ Review submitted but no review data returned in response');
+                // Still reload to get the review from database
+                setTimeout(() => {
+                  console.log('🔄 Reloading reviews (no review data in response)...');
+                  loadReviews();
+                }, 2000);
+              }
+              
+              // Reset form
+              form.reset();
+              modalSelectedRating = 0;
+              
+              // Reset rating stars
+              document.querySelectorAll('.modal-rating-star').forEach(s => {
+                s.classList.remove('text-amber-400');
+                s.classList.add('text-slate-300');
+              });
+              const ratingTextEl = document.getElementById('modal-rating-text');
+              if (ratingTextEl) ratingTextEl.textContent = '';
+              
+              // Store timeout ID globally so it can be cleared
+              window.reviewModalCloseTimeout = setTimeout(() => {
+                console.log('Attempting to close modal...');
+                const modal = document.getElementById('review-modal');
+                if (modal) {
+                  modal.classList.add('hidden');
+                  modal.classList.remove('flex');
+                  document.body.style.overflow = '';
+                  document.body.style.overflowX = '';
+                  document.body.style.overflowY = '';
+                  console.log('Modal closed successfully');
+                } else {
+                  console.error('Modal element not found when trying to close');
+                }
+              }, 2000);
+              
+              // Also allow immediate close via success message close button
+              const successCloseBtn = document.getElementById('success-close-btn');
+              if (successCloseBtn) {
+                successCloseBtn.onclick = () => {
+                  if (window.reviewModalCloseTimeout) {
+                    clearTimeout(window.reviewModalCloseTimeout);
+                    window.reviewModalCloseTimeout = null;
+                  }
+                  closeReviewModal();
+                };
+              }
+            } else {
+              // Show detailed error message from API
+              let errorMsgText = result.message || 'Failed to submit review. Please try again.';
+              
+              if (result.error) {
+                console.error('Review submission error details:', result.error);
+                
+                // Show the main error message
+                errorMsgText = result.message || result.error.message || errorMsgText;
+                
+                // Add helpful information
+                if (result.error.help) {
+                  errorMsgText += `\n\n${result.error.help}`;
+                }
+                
+                if (result.error.code === '42P01') {
+                  errorMsgText = 'Database table "client_reviews" does not exist.\n\n' + 
+                    'To fix this:\n' +
+                    '1. Open Supabase Dashboard\n' +
+                    '2. Go to SQL Editor\n' +
+                    '3. Run the SQL from: supabase/migrations/011_simplify_client_reviews.sql\n' +
+                    '4. Try submitting again';
+                }
+              }
+              
+              // Display error message with line breaks
+              errorText.innerHTML = errorMsgText.replace(/\n/g, '<br>');
+              errorMsg.classList.remove('hidden');
+              
+              // Log full error for debugging
+              console.error('Review submission failed:', result);
+              console.error('Error code:', result.error?.code);
+              console.error('Error message:', result.error?.message);
+            }
+          } catch (error) {
+            console.error('Error submitting review:', error);
+            console.error('Error type:', typeof error);
+            console.error('Error keys:', error ? Object.keys(error) : 'no error object');
+            
+            let errorMessage = 'An error occurred. Please try again later.';
+            
+            // Handle different error types
+            if (error && typeof error === 'object') {
+              // Network/fetch error
+              if (error.type === 'network_error' || error.message?.includes('fetch')) {
+                errorMessage = '❌ Connection Error\n\n' +
+                  'Could not connect to the server.\n\n' +
+                  'Please check:\n' +
+                  '1. Is your Next.js server running? (npm run dev)\n' +
+                  '2. Check the server console for errors\n' +
+                  '3. Try refreshing the page\n\n' +
+                  (error.help ? error.help : '');
+              }
+              // API error response
+              else if (error.message) {
+                errorMessage = error.message;
+                
+                // If error has result object with error details
+                if (error.result && error.result.error) {
+                  const apiError = error.result.error;
+                  errorMessage = error.result.message || apiError.message || errorMessage;
+                  
+                  // Add helpful hints
+                  if (apiError.code === '42P01') {
+                    errorMessage = '❌ Database table "client_reviews" does not exist.\n\n' +
+                      'To fix this:\n' +
+                      '1. Open Supabase Dashboard (https://app.supabase.com)\n' +
+                      '2. Go to SQL Editor\n' +
+                      '3. Open CREATE_REVIEWS_TABLE.sql file\n' +
+                      '4. Copy ALL the SQL\n' +
+                      '5. Paste and Run it\n' +
+                      '6. Try submitting again';
+                  } else if (apiError.help) {
+                    errorMessage += '\n\n' + apiError.help;
+                  }
+                }
+              }
+            } else if (error && typeof error === 'string') {
+              errorMessage = error;
+            } else if (error && error.message) {
+              errorMessage = error.message;
+            }
+            
+            // Display error with line breaks
+            errorText.innerHTML = errorMessage.replace(/\n/g, '<br>');
+            errorMsg.classList.remove('hidden');
+            
+            // Scroll to error message
+            errorMsg.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Submit Review';
+          }
+        }
+      });
+
+      // Close modal on Escape key
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          const modal = document.getElementById('review-modal');
+          if (modal && !modal.classList.contains('hidden')) {
+            closeReviewModal();
+          }
+        }
+      });
     </script>
   </body>
 </html>

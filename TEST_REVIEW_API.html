@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Review API</title>
+</head>
+<body>
+    <h1>Review API Test</h1>
+    <button onclick="testAPI()">Test Review API</button>
+    <div id="result" style="margin-top: 20px; padding: 20px; background: #f0f0f0;"></div>
+
+    <script>
+        async function testAPI() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = 'Loading...';
+
+            try {
+                const apiUrl = window.location.origin + '/api/reviews/get';
+                console.log('Testing:', apiUrl);
+                
+                const response = await fetch(apiUrl);
+                const result = await response.json();
+                
+                console.log('API Response:', result);
+                
+                resultDiv.innerHTML = `
+                    <h2>API Response:</h2>
+                    <pre>${JSON.stringify(result, null, 2)}</pre>
+                    <h3>Reviews Found: ${result.reviews?.length || 0}</h3>
+                    ${result.reviews && result.reviews.length > 0 ? `
+                        <h3>First Review:</h3>
+                        <pre>${JSON.stringify(result.reviews[0], null, 2)}</pre>
+                    ` : '<p>No reviews found</p>'}
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+                console.error('Error:', error);
+            }
+        }
+    </script>
+</body>
+</html>
+
+

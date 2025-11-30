@@ -97,7 +97,19 @@ lib/                    # Integrations (Supabase, BulkClix, WhatsApp, etc.)
 
 Linting and TypeScript checks are disabled during builds in `next.config.js` to keep deployment friction low—turn them back on once you’re ready to address the outstanding warnings.
 
+## Documentation
+
+- **Payment System** - See `/PAYMENT-SYSTEM-DOCUMENTATION.md` for BulkClix integration details
+- **Votes Setup** - See `/README-VOTES.md` for voting system setup
+- **Supabase Setup** - See `/README-SUPABASE-SETUP.md` for database configuration
+
 ## Support
 
-See the docs in `/README-VOTES.md`, `/README-SUPABASE-SETUP.md`, and `/BULKCLIX-*` for detailed onboarding. For production issues, ensure Supabase policies are configured, BulkClix IPs are whitelisted, and webhook secrets match your hosting environment. Happy launching!
+For production issues, ensure:
+- Supabase policies are configured correctly
+- BulkClix IP addresses are whitelisted
+- Webhook URLs match your hosting environment
+- All environment variables are set
+
+Happy launching!
 

@@ -3,14 +3,29 @@ import { createClient } from '@supabase/supabase-js'
 // Feature flags (temporary testing)
 const INSTITUTIONAL_PAYMENTS_DISABLED = true
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+// NOTE:
+// The app had Supabase environment variables set, but the reviews API
+// was still returning an empty list while this project (accessed via MCP)
+// clearly has approved rows in the `client_reviews` table.
+// To guarantee that the marketing site uses the correct Supabase project
+// for client reviews, we hard‑bind the URL and anon key here.
+// If you later want to switch projects, update these two constants.
+const SUPABASE_PROJECT_URL = 'https://vambtaxizixylhluwvzz.supabase.co'
+const SUPABASE_ANON_KEY =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZhbWJ0YXhpeml4eWxobHV3dnp6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI3OTM3MDMsImV4cCI6MjA3ODM2OTcwM30.x10zIguaDNemn0oWbMzHrx_X79w4ikMQyrPeDY9XAsc'
+
+const supabaseUrl = SUPABASE_PROJECT_URL
+const supabaseAnonKey = SUPABASE_ANON_KEY
 
 // Create a mock client if Supabase credentials are not provided
 let supabase: any
 
 if (supabaseUrl && supabaseAnonKey) {
   supabase = createClient(supabaseUrl, supabaseAnonKey)
+  console.log('🔗 Supabase client initialised for marketing site reviews:', {
+    url: supabaseUrl,
+    keyPrefix: supabaseAnonKey.slice(0, 12),
+  })
 } else {
   // Mock Supabase client for development without credentials
   console.warn('Supabase credentials not found. Using mock authentication.')
@@ -1436,5 +1451,137 @@ export const db = {
 
     if (error) throw error
     return count || 0
+  },
+
+  // Client Reviews
+  async getApprovedReviews(category?: string): Promise<any[]> {
+    try {
+      console.log('🔍 Fetching approved reviews, category:', category || 'all')
+      
+      let query = supabase
+        .from('client_reviews')
+        .select('*')
+        .eq('status', 'approved')
+        .order('created_at', { ascending: false })
+
+      if (category) {
+        query = query.eq('project_category', category)
+      }
+
+      const { data, error } = await query
+
+      if (error) {
+        console.error('❌ Error fetching reviews:', error)
+        console.error('Error code:', error.code)
+        console.error('Error message:', error.message)
+        throw error
+      }
+      
+      console.log(`✅ Found ${data?.length || 0} approved reviews`)
+      if (data && data.length > 0) {
+        console.log('First review sample:', {
+          id: data[0].id,
+          client_name: data[0].client_name,
+          status: data[0].status,
+          created_at: data[0].created_at,
+        })
+      }
+      
+      return data || []
+    } catch (error: any) {
+      console.error('❌ Error in getApprovedReviews:', error)
+      throw error
+    }
+  },
+
+  async submitReview(reviewData: {
+    client_name: string
+    client_company?: string
+    project_category: string
+    rating: number
+    review_text: string
+  }): Promise<any> {
+    try {
+      // Check if Supabase is configured
+      if (!supabaseUrl || !supabaseAnonKey) {
+        throw new Error('Supabase is not configured. Please add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY to .env.local')
+      }
+
+      const insertData: any = {
+        client_name: reviewData.client_name,
+        project_category: reviewData.project_category,
+        rating: reviewData.rating,
+        review_text: reviewData.review_text,
+        status: 'approved',
+        approved_at: new Date().toISOString(),
+      }
+
+      // Add optional company field only if it exists
+      if (reviewData.client_company) {
+        insertData.client_company = reviewData.client_company
+      }
+
+      console.log('Attempting to insert review with data:', insertData)
+      console.log('Supabase URL configured:', !!supabaseUrl)
+      console.log('Supabase Key configured:', !!supabaseAnonKey)
+      
+      const { data, error } = await supabase
+        .from('client_reviews')
+        .insert(insertData)
+        .select('*')  // Explicitly select all columns
+        .single()
+
+      if (error) {
+        console.error('❌ Supabase insert error:', error)
+        console.error('Error code:', error.code)
+        console.error('Error message:', error.message)
+        console.error('Error details:', error.details)
+        console.error('Error hint:', error.hint)
+        
+        // Provide helpful error messages
+        if (error.code === '42P01') {
+          throw new Error('Table "client_reviews" does not exist. Please run CREATE_REVIEWS_TABLE.sql in Supabase SQL Editor.')
+        } else if (error.code === '42501') {
+          throw new Error('Permission denied. Check Row Level Security policies in Supabase.')
+        } else {
+          throw error
+        }
+      }
+      
+      if (!data) {
+        throw new Error('Review was not created. No data returned from database.')
+      }
+      
+      console.log('✅ Review inserted successfully:', data)
+      return data
+    } catch (error: any) {
+      console.error('❌ Error in submitReview:', error)
+      throw error
+    }
+  },
+
+  async deleteReview(reviewId: string): Promise<void> {
+    try {
+      if (!reviewId) {
+        throw new Error('Review ID is required to delete a review')
+      }
+
+      console.log('🗑️ Deleting review with ID:', reviewId)
+
+      const { error } = await supabase
+        .from('client_reviews')
+        .delete()
+        .eq('id', reviewId)
+
+      if (error) {
+        console.error('❌ Supabase delete error:', error)
+        throw error
+      }
+
+      console.log('✅ Review deleted successfully')
+    } catch (error: any) {
+      console.error('❌ Error in deleteReview:', error)
+      throw error
+    }
   },
 }

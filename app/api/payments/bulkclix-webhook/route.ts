@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/supabaseClient'
 
+// Mark this route as dynamic
+export const dynamic = 'force-dynamic'
+
 /**
  * BulkClix Webhook Handler
  * This endpoint receives payment status updates from BulkClix
@@ -27,65 +30,82 @@ export async function POST(request: NextRequest) {
       phone_number,
     } = body
 
-    console.log('BulkClix webhook received:', { amount, status, transaction_id, ext_transaction_id, phone_number })
+    console.log('📥 Payment Callback (Webhook) Received:', { 
+      amount, 
+      status, 
+      transaction_id, 
+      ext_transaction_id, 
+      phone_number 
+    })
 
-    // Extract our transaction ID from client_reference (format: PRELYCT-{transactionId}-{timestamp})
+    // Extract our transaction ID from client_reference
+    // New format: client_reference is just the transaction ID (UUID, 36 chars)
+    // Old format (for backwards compatibility): PRELYCT-{transactionId}-{timestamp}
     let ourTransactionId: string | null = null
-    if (ext_transaction_id && ext_transaction_id.startsWith('PRELYCT-')) {
-      const parts = ext_transaction_id.split('-')
-      if (parts.length >= 2) {
-        ourTransactionId = parts[1]
+    
+    if (ext_transaction_id) {
+      // Check if it's the old format with PRELYCT prefix
+      if (ext_transaction_id.startsWith('PRELYCT-')) {
+        const parts = ext_transaction_id.split('-')
+        if (parts.length >= 2) {
+          ourTransactionId = parts[1]
+        }
+      } else {
+        // New format: ext_transaction_id IS the transaction ID (UUID)
+        // UUIDs are exactly 36 characters
+        ourTransactionId = ext_transaction_id.length === 36 ? ext_transaction_id : null
       }
     }
 
-    if (!ourTransactionId) {
-      console.error('Could not extract transaction ID from client_reference:', ext_transaction_id)
+    if (!ourTransactionId && !transaction_id) {
+      console.error('Could not extract transaction ID from webhook payload:', {
+        ext_transaction_id,
+        transaction_id,
+      })
       return NextResponse.json(
-        { error: 'Invalid client_reference format' },
+        { error: 'Invalid webhook payload: missing transaction identifiers' },
         { status: 400 }
       )
     }
 
-    // Map BulkClix status to our status format
-    let transactionStatus: 'pending' | 'processing' | 'completed' | 'failed' | 'refunded' = 'pending'
-    if (status === 'success' || status === 'successful') {
-      transactionStatus = 'completed'
-    } else if (status === 'failed' || status === 'error') {
-      transactionStatus = 'failed'
-    } else if (status === 'pending') {
-      transactionStatus = 'pending'
+    // Map BulkClix status to database status
+    let dbStatus: 'pending' | 'processing' | 'completed' | 'failed' | 'refunded' = 'pending'
+    if (status === 'success' || status === 'successful' || status === 'completed') {
+      dbStatus = 'completed'
+    } else if (status === 'failed' || status === 'error' || status === 'declined' || status === 'cancelled') {
+      dbStatus = 'failed'
     }
 
     // Update payment transaction in database
-    const transaction = await db.getPaymentTransaction(ourTransactionId)
-    if (!transaction) {
-      console.error('Transaction not found:', ourTransactionId)
-      return NextResponse.json(
-        { error: 'Transaction not found' },
-        { status: 404 }
-      )
+    if (ourTransactionId) {
+      try {
+        const transaction = await db.getPaymentTransaction(ourTransactionId)
+        if (transaction) {
+          await db.updatePaymentTransaction(ourTransactionId, {
+            status: dbStatus,
+            provider_transaction_id: transaction_id,
+            metadata: {
+              ...(transaction.metadata || {}),
+              webhook_received_at: new Date().toISOString(),
+              bulkclix_status: status,
+              phone_number: phone_number,
+            },
+          })
+          console.log('✅ Database transaction updated:', ourTransactionId, '→', dbStatus)
+        } else {
+          console.warn('⚠️ Transaction not found in database:', ourTransactionId)
+        }
+      } catch (dbError) {
+        console.error('Database update error:', dbError)
+      }
     }
 
-    // Update transaction status
-    await db.updatePaymentTransaction(ourTransactionId, {
-      status: transactionStatus,
-      provider_transaction_id: transaction_id,
-      metadata: {
-        ...(transaction.metadata || {}),
-        webhook_received_at: new Date().toISOString(),
-        bulkclix_status: status,
-        phone_number: phone_number,
-      },
+    return NextResponse.json({ 
+      received: true, 
+      transaction_id: ourTransactionId || transaction_id,
+      status: dbStatus,
+      message: 'Webhook processed successfully'
     })
-
-    // If payment is successful, we need to check if votes need to be submitted
-    // This is handled by the frontend polling, but we can also trigger it here if needed
-    if (transactionStatus === 'completed') {
-      console.log('Payment completed for transaction:', ourTransactionId)
-      // The frontend will detect the status change when polling
-    }
-
-    return NextResponse.json({ received: true, status: transactionStatus })
   } catch (error: any) {
     console.error('BulkClix webhook processing error:', error)
     return NextResponse.json(

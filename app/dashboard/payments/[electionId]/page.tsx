@@ -91,7 +91,9 @@ export default function PaymentPage() {
           account_number: formattedPhone,
           channel: channelMap[mobileMoneyDetails.network],
           account_name: election.name || 'Election Admin',
-          client_reference: `INV-${invoice.invoice_number}-${Date.now()}`,
+          // BulkClix requires transaction_id to be max 36 characters
+          // Invoice IDs are UUIDs (exactly 36 characters) - perfect!
+          client_reference: invoice.id,
         })
 
         if (!paymentResponse.success || !paymentResponse.transaction_id) {

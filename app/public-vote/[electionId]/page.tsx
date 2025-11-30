@@ -5,14 +5,14 @@ import { useParams } from 'next/navigation'
 import Card from '@/components/Card'
 import Button from '@/components/Button'
 import { db } from '@/lib/supabaseClient'
-import { formatPhoneForBulkClix } from '@/lib/bulkclix'
+import { formatPhoneForBulkClix, generateVoterReference } from '@/lib/bulkclix'
 import { useCurrency } from '@/lib/useCurrency'
 
 const MOBILE_NETWORKS = ['MTN', 'VODAFONE', 'AIRTELTIGO'] as const
 
 export default function PublicVotePage() {
   // Allow payments by default; can be disabled via NEXT_PUBLIC_BULKCLIX_DISABLED
-  const BULKCLIX_DISABLED = process.env.NEXT_PUBLIC_BULKCLIX_DISABLED === 'true'
+  const BULKCLIX_DISABLED = typeof process !== 'undefined' && process.env?.NEXT_PUBLIC_BULKCLIX_DISABLED === 'true' && process.env?.NEXT_PUBLIC_BULKCLIX_DISABLED === 'true'
   const params = useParams()
   const electionId = params.electionId as string
   const [election, setElection] = useState<any>(null)
@@ -35,7 +35,7 @@ export default function PublicVotePage() {
     try {
       setLoading(true)
       setError('')
-      let contestData = await db.getPublicElection(electionId)
+      let contestData: any = await db.getPublicElection(electionId)
       if (!contestData) {
         contestData = await db.getPublicContest(electionId)
       }
@@ -47,8 +47,11 @@ export default function PublicVotePage() {
       setElection(contestData.election)
       setPositions(contestData.positions)
       setCandidates(contestData.candidates)
-      if ('voteCounts' in contestData && contestData.voteCounts) {
+      if (contestData.voteCounts) {
         setVoteCounts(contestData.voteCounts)
+      } else {
+        // Initialize empty voteCounts if not provided
+        setVoteCounts({})
       }
     } catch (err: any) {
       setError(err.message || 'Failed to load election')
@@ -160,6 +163,9 @@ export default function PublicVotePage() {
       setPaymentStatus('initiating')
       setPaymentMessage('Sending payment request...')
       
+      // Generate unique voter reference (max 20 characters) based on election, phone, and transaction
+      const voterRef = generateVoterReference(election.id, formattedPhone, transaction.id)
+      
       // Call our API route instead of directly calling BulkClix (avoids CORS issues)
       const paymentResponse = await fetch('/api/payments/initiate', {
         method: 'POST',
@@ -171,7 +177,9 @@ export default function PublicVotePage() {
           account_number: formattedPhone,
           channel: channelMap[mobileMoneyNetwork] || 'MTN',
           account_name: 'Voter',
-          client_reference: `PRELYCT-${transaction.id}-${Date.now()}`,
+          client_reference: transaction.id, // UUID is exactly 36 characters - matches BulkClix requirement
+          reference: voterRef, // Unique 20-character reference based on voter
+          election_id: election.id, // Pass election ID for reference generation
         }),
       })
 
@@ -241,21 +249,35 @@ export default function PublicVotePage() {
       })
 
       setPaymentStatus('pending')
-      setPaymentMessage('Check your phone and approve the USSD prompt')
+      setPaymentMessage('Waiting for payment confirmation...')
 
-      // Poll database for payment confirmation
-      const maxPollAttempts = 120
+      // Poll payment status using the status check API
+      // Initial delay: 3 seconds
+      await new Promise(resolve => setTimeout(resolve, 3000))
+
+      const maxPollAttempts = 120 // 10 minutes total (120 * 5 seconds average)
       let pollAttempts = 0
       let paymentCompleted = false
+      const startTime = Date.now()
 
-      while (pollAttempts < maxPollAttempts && !paymentCompleted) {
-        await new Promise(resolve => setTimeout(resolve, 5000))
-
+      const checkPaymentStatus = async (isManualCheck = false): Promise<boolean> => {
         try {
-          const updatedTransaction = await db.getPaymentTransaction(transaction.id)
+          // Use our transaction ID (the database transaction ID, not the BulkClix one)
+          const statusResponse = await fetch(`/api/payments/status?transaction_id=${transaction.id}`)
           
-          if (updatedTransaction?.status === 'completed') {
-            paymentCompleted = true
+          if (!statusResponse.ok) {
+            if (statusResponse.status === 404 && !isManualCheck) {
+              // Transaction not found yet (normal for first few seconds)
+              return false
+            }
+            throw new Error(`Status check failed: ${statusResponse.statusText}`)
+          }
+
+          const statusData = await statusResponse.json()
+          console.log('📊 Payment Status Check:', statusData)
+
+          if (statusData.status === 'success') {
+            // Payment successful - submit vote
             await db.submitPublicVote(
               election.id,
               selectedCandidate!,
@@ -265,21 +287,56 @@ export default function PublicVotePage() {
               transaction.id
             )
             setPaymentStatus('completed')
+            setPaymentMessage('Payment successful! Your vote has been recorded.')
             setProcessing(false)
             setSubmitted(true)
             await loadVoteCounts()
-            return
-          } else if (updatedTransaction?.status === 'failed' || updatedTransaction?.status === 'refunded') {
+            return true
+          } else if (statusData.status === 'failed') {
             setPaymentStatus('failed')
-            setPaymentMessage('Payment failed. Please try again.')
+            setPaymentMessage(statusData.message || 'Payment failed. Please try again.')
             setError('Payment failed')
             setProcessing(false)
-            return
+            return true
           }
+
+          // Still pending
+          return false
         } catch (error) {
-          console.error('Error checking transaction:', error)
+          console.error('Error checking payment status:', error)
+          if (isManualCheck) {
+            setPaymentMessage(`Error checking status: ${error instanceof Error ? error.message : 'Unknown error'}`)
+          }
+          return false
         }
+      }
+
+      // Polling loop with variable intervals (matching documentation)
+      while (pollAttempts < maxPollAttempts && !paymentCompleted) {
+        const elapsed = Date.now() - startTime
+        
+        // Determine polling interval (from documentation):
+        // - First 10 checks (30 seconds): Every 3 seconds
+        // - After 30 seconds: Every 2 seconds (faster polling)
+        const pollInterval = elapsed < 30000 ? 3000 : 2000
+        
+        await new Promise(resolve => setTimeout(resolve, pollInterval))
+
+        paymentCompleted = await checkPaymentStatus(false)
         pollAttempts++
+
+        // Update message based on elapsed time
+        if (!paymentCompleted) {
+          const minutes = Math.floor(elapsed / 60000)
+          const seconds = Math.floor((elapsed % 60000) / 1000)
+          const timeStr = minutes > 0 ? `${minutes}m ${seconds}s` : `${seconds}s`
+          setPaymentMessage(`Waiting for payment confirmation... (${timeStr})`)
+          
+          // Show timeout warning after 2 minutes
+          if (elapsed > 120000) {
+            setPaymentMessage(`Waiting for payment confirmation... (${timeStr}) - Please check your phone`)
+          }
+        }
       }
 
       if (!paymentCompleted) {
@@ -371,11 +428,26 @@ export default function PublicVotePage() {
   if (!election) return null
 
   return (
-    <div className="min-h-screen bg-gray-50 py-10 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto space-y-10">
-        {/* Header */}
-        <Card className="text-center p-6 border border-gray-100 shadow-sm bg-white">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">{election.name}</h1>
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      {/* Prelyct Logo Header */}
+      <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex items-center justify-center gap-3">
+            <img 
+              src="/images/logo.png" 
+              alt="Prelyct" 
+              className="h-10 w-10 sm:h-12 sm:w-12 object-contain"
+            />
+            <span className="text-lg sm:text-xl font-bold text-gray-900">Prelyct Votes</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex-1 py-6 sm:py-10 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto space-y-6 sm:space-y-10">
+          {/* Header */}
+          <Card className="text-center p-4 sm:p-6 border border-gray-100 shadow-sm bg-white">
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">{election.name}</h1>
           {election.description && <p className="text-gray-600 mb-4">{election.description}</p>}
           <div className="flex items-center justify-center gap-4 text-sm">
             <span className="bg-primary-50 px-3 py-1 rounded-full">
@@ -423,17 +495,17 @@ export default function PublicVotePage() {
                           setSelectedCandidate(candidate.id)
                           setFormErrors(prev => ({ ...prev, candidate: '' }))
                         }}
-                        className={`rounded-xl border px-4 py-3 text-left flex items-center gap-4 transition ${
+                        className={`rounded-xl border px-3 sm:px-4 py-3 text-left flex items-center gap-3 sm:gap-4 transition touch-manipulation ${
                           isSelected
                             ? 'border-primary bg-primary/5 ring-1 ring-primary/30'
-                            : 'border-gray-200 bg-white hover:border-primary/40'
+                            : 'border-gray-200 bg-white hover:border-primary/40 active:bg-gray-50'
                         }`}
                       >
                         {candidate.photo_url ? (
                           <img
                             src={candidate.photo_url}
                             alt={candidate.name}
-                            className="w-16 h-16 rounded-full object-cover border border-gray-200 flex-shrink-0"
+                            className="w-14 h-14 sm:w-16 sm:h-16 rounded-full object-cover border border-gray-200 flex-shrink-0"
                             onError={(e) => {
                               const target = e.target as HTMLImageElement
                               target.style.display = 'none'
@@ -444,8 +516,8 @@ export default function PublicVotePage() {
                             }}
                           />
                         ) : (
-                          <div className="w-16 h-16 rounded-full bg-gray-200 border border-gray-300 flex items-center justify-center flex-shrink-0">
-                            <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gray-200 border border-gray-300 flex items-center justify-center flex-shrink-0">
+                            <svg className="w-7 h-7 sm:w-8 sm:h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                             </svg>
                           </div>
@@ -483,7 +555,7 @@ export default function PublicVotePage() {
                     <button
                       type="button"
                       onClick={() => setVoteCount(Math.max(1, voteCount - 1))}
-                      className="w-8 h-8 rounded border border-gray-300 bg-white hover:bg-gray-50 disabled:opacity-50"
+                      className="w-10 h-10 sm:w-8 sm:h-8 rounded border border-gray-300 bg-white hover:bg-gray-50 active:bg-gray-100 disabled:opacity-50 touch-manipulation flex items-center justify-center"
                       disabled={voteCount <= 1}
                     >
                       <svg className="w-4 h-4 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -508,7 +580,7 @@ export default function PublicVotePage() {
                         const max = election.max_votes_per_user || 1000
                         setVoteCount(Math.min(voteCount + 1, max))
                       }}
-                      className="w-8 h-8 rounded border border-gray-300 bg-white hover:bg-gray-50 disabled:opacity-50"
+                      className="w-10 h-10 sm:w-8 sm:h-8 rounded border border-gray-300 bg-white hover:bg-gray-50 active:bg-gray-100 disabled:opacity-50 touch-manipulation flex items-center justify-center"
                       disabled={election.max_votes_per_user && voteCount >= election.max_votes_per_user}
                     >
                       <svg className="w-4 h-4 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -572,7 +644,7 @@ export default function PublicVotePage() {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Mobile Money Network <span className="text-red-500">*</span>
               </label>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-2">
                 {MOBILE_NETWORKS.map((network) => (
                   <button
                     key={network}
@@ -581,10 +653,10 @@ export default function PublicVotePage() {
                       setMobileMoneyNetwork(network)
                       setFormErrors(prev => ({ ...prev, network: '' }))
                     }}
-                    className={`p-3 rounded-lg border-2 text-sm font-medium transition ${
+                    className={`p-4 sm:p-3 rounded-lg border-2 text-sm font-medium transition touch-manipulation ${
                       mobileMoneyNetwork === network
                         ? 'border-primary bg-primary/10 text-primary'
-                        : 'border-gray-200 hover:border-primary/50 text-gray-700 bg-white'
+                        : 'border-gray-200 hover:border-primary/50 active:bg-gray-50 text-gray-700 bg-white'
                     }`}
                   >
                     {network === 'AIRTELTIGO' ? 'AirtelTigo' : network}
@@ -597,42 +669,65 @@ export default function PublicVotePage() {
 
           {/* Payment Status */}
           {processing && paymentStatus !== 'idle' && (
-            <div className={`mb-6 p-4 rounded-lg border ${
-              paymentStatus === 'completed' 
-                ? 'bg-green-50 border-green-200' 
-                : paymentStatus === 'failed'
-                ? 'bg-red-50 border-red-200'
-                : 'bg-yellow-50 border-yellow-200'
-            }`}>
-              <div className="flex items-center gap-3">
-                {paymentStatus === 'pending' && (
-                  <div className="w-5 h-5 border-2 border-yellow-600 border-t-transparent rounded-full animate-spin"></div>
-                )}
-                {paymentStatus === 'completed' && (
-                  <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                )}
-                {paymentStatus === 'failed' && (
-                  <svg className="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                )}
-                <div className="flex-1">
-                  <p className="font-medium text-sm">{paymentMessage}</p>
-                  {paymentStatus === 'pending' && (
-                    <p className="text-xs text-gray-600 mt-1">Enter your Mobile Money PIN on your phone</p>
-                  )}
+            <>
+              {/* Top Status Box - Yellow/Cream for pending payments */}
+              {paymentStatus === 'pending' && (
+                <div className="mb-4 p-5 rounded-xl border-2 border-amber-300 bg-amber-50/50 shadow-sm">
+                  <div className="flex items-center gap-4">
+                    <div className="w-6 h-6 border-3 border-amber-700 border-t-transparent rounded-full animate-spin flex-shrink-0"></div>
+                    <div className="flex-1">
+                      <p className="font-semibold text-gray-900 text-base mb-1">{paymentMessage}</p>
+                      <p className="text-sm text-gray-700">Enter your Mobile Money PIN on your phone</p>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
+              )}
+              
+              {/* Success Status */}
+              {paymentStatus === 'completed' && (
+                <div className="mb-4 p-5 rounded-xl border-2 border-green-300 bg-green-50 shadow-sm">
+                  <div className="flex items-center gap-4">
+                    <svg className="w-6 h-6 text-green-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <div className="flex-1">
+                      <p className="font-semibold text-gray-900 text-base">{paymentMessage}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              {/* Error Status */}
+              {paymentStatus === 'failed' && (
+                <div className="mb-4 p-5 rounded-xl border-2 border-red-300 bg-red-50 shadow-sm">
+                  <div className="flex items-center gap-4">
+                    <svg className="w-6 h-6 text-red-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                    <div className="flex-1">
+                      <p className="font-semibold text-gray-900 text-base">{paymentMessage}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              {/* Bottom Status Bar - Blue for active payment processing */}
+              {(paymentStatus === 'initiating' || paymentStatus === 'pending') && (
+                <div className="mb-6 p-4 rounded-lg bg-blue-600 text-white shadow-md">
+                  <div className="flex items-center gap-3">
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin flex-shrink-0"></div>
+                    <p className="font-medium text-sm">Waiting for Payment...</p>
+                  </div>
+                </div>
+              )}
+            </>
           )}
 
           {/* Submit Button */}
           <Button
             onClick={handleVote}
             disabled={!selectedCandidate || !userPhone.trim() || !mobileMoneyNetwork || processing}
-            className="w-full py-3"
+            className="w-full py-4 sm:py-3 text-base sm:text-sm touch-manipulation"
             size="lg"
           >
             {processing ? (
@@ -711,7 +806,45 @@ export default function PublicVotePage() {
             })}
           </div>
         </Card>
+        </div>
       </div>
+
+      {/* Footer */}
+      <footer className="bg-white border-t border-gray-200 mt-auto">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
+            <div className="flex items-center gap-3">
+              <img 
+                src="/images/logo.png" 
+                alt="Prelyct" 
+                className="h-10 w-10 object-contain"
+              />
+              <div>
+                <h3 className="text-lg font-bold text-gray-900">Prelyct</h3>
+                <p className="text-sm text-gray-600 mt-1 max-w-md">
+                  Building secure digital tools for campuses and organisations across Ghana—covering elections, student housing, web development, and creative services.
+                </p>
+              </div>
+            </div>
+            <div className="text-center sm:text-right">
+              <p className="text-sm text-gray-500">Powered by</p>
+              <a 
+                href="https://www.prelyct.com" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-sm font-semibold text-primary hover:text-primary/80 transition-colors inline-block mt-1"
+              >
+                www.prelyct.com
+              </a>
+            </div>
+          </div>
+          <div className="mt-6 pt-6 border-t border-gray-200 text-center">
+            <p className="text-xs text-gray-500">
+              © {new Date().getFullYear()} Prelyct. All rights reserved.
+            </p>
+          </div>
+        </div>
+      </footer>
     </div>
   )
 }
